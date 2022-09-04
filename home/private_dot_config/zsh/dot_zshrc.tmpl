@@ -1,0 +1,156 @@
+# vim:ft=zsh
+#
+# Enable colors and change prompt:
+autoload -U colors && colors	# Load colors
+# Load version control information
+autoload -Uz vcs_info
+# Format the vcs_info_msg_0_ variable
+zstyle ':vcs_info:git:*' formats '%F{red}on%f %F{yellow}%b%f'
+
+# automatically update $PATH but would be a bit slow 
+# zstyle ':completion:*' rehash true
+
+setopt prompt_subst
+PROMPT='%B%F{red}[%F{yellow}%n%F{green}@%F{blue}%M %F{magenta}%~%{$fg[red]%} ${vcs_info_msg_0_}%F{red}]%f%b$%k '
+#PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b "
+ # Add an emoji to the prompt if `UPTERM_ADMIN_SOCKET` exists
+export PROMPT="$([[ -n "${UPTERM_ADMIN_SOCKET}"  ]] && echo -e '\xF0\x9F\x86\x99 ')$PS1"
+setopt autocd		# Automatically cd into typed directory.
+stty stop undef		# Disable ctrl-s to freeze terminal.
+setopt interactive_comments
+
+# History in cache directory:
+HISTSIZE=10000000
+SAVEHIST=10000000
+HISTFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/history"
+
+{{- if (eq .chezmoi.os "linux") }}
+{{-   if (eq .chezmoi.osRelease.id "pop") }}
+ZSH_FZF="/usr/share/doc/fzf/examples" # PopOS/Ubuntu
+ZSH_HIGHLIGHTING="/usr/share/zsh-syntax-highlighting"
+ZSH_FAST_HIGHLIGHTING="/usr/share/zsh-syntax-highlighting"
+ZSH_AUTOSUGGEST="/usr/share/zsh-autosuggestions"
+{{-   else }}
+ZSH_FZF="/usr/share/fzf" # arch for now
+ZSH_HIGHLIGHTING="/usr/share/zsh-syntax-highlighting"
+ZSH_FAST_HIGHLIGHTING="/usr/share/zsh/plugins/fast-syntax-highlighting"
+ZSH_AUTOSUGGEST="/usr/share/zsh/plugins/zsh-autosuggestions"
+{{-   end }}
+{{- end }}
+
+# Custom Completions dir
+fpath=("${ZDOTDIR:-$HOME/.config/zsh}/completions" $fpath)
+
+# Load Aliaased and shortcuts if exist
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliasrc"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/zshnameddirrc"
+
+{{- if (eq .chezmoi.os "darwin") }}
+# TODO: Untested osx
+if [[ ! "$PATH" == */usr/local/opt/fzf/bin* ]]; then
+  export PATH="${PATH:+${PATH}:}/usr/local/opt/fzf/bin"
+fi
+[[ $- == *i* ]] && source "/usr/local/opt/fzf/shell/completion.zsh" 2> /dev/null
+[ -f "/usr/local/opt/fzf/shell/key-bindings.zsh" ] && source "/usr/local/opt/fzf/shell/key-bindings.zsh"
+{{- end }}
+
+[ -f $ZSH_FZF/completion.zsh ] && source $ZSH_FZF/completion.zsh
+[ -f $ZSH_FZF/key-bindings.zsh ] && source $ZSH_FZF/key-bindings.zsh
+
+# Basic auto/tab complete:
+autoload -U compinit
+zstyle ':completion:*' menu select
+zmodload zsh/complist
+compinit
+_comp_options+=(globdots)		# Include hidden files.
+
+# vi mode
+bindkey -v
+export KEYTIMEOUT=1
+
+# Use vim keys in tab complete menu:
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -v '^?' backward-delete-char
+
+#Change cursor shape for vi-modes
+function zle-keymap-select {
+    case $KEYMAP in
+        vicmd) echo -ne '\e[1 q';; # block
+        viins|main) echo -ne '\e[5 q';; # beam
+    esac
+}
+zle -N zle-keymap-select
+
+# enabled: ci", ci', ci`, di", etc
+autoload -U select-quoted
+zle -N select-quoted
+for m in visual viopp; do
+  for c in {a,i}{\',\",\`}; do
+    bindkey -M $m $c select-quoted
+  done
+done
+
+# enabled ci{, ci(, ci<, di{, etc
+autoload -U select-bracketed
+zle -N select-bracketed
+for m in visual viopp; do
+  for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
+    bindkey -M $m $c select-bracketed
+  done
+done
+
+zle-line-init() {
+    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+    echo -ne "\e[5 q"
+}
+zle -N zle-line-init
+echo -ne '\e[5 q' # Use beam shape cursor on startup.
+preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
+precmd () { vcs_info }
+
+# Use lf to switch directories and bind it to ctrl-o
+lfcd () {
+    tmp="$(mktemp)"
+    lf -last-dir-path="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+        dir="$(cat "$tmp")"
+        rm -f "$tmp" >/dev/null
+        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
+    fi
+}
+
+bindkey -s '^o' '^ulfcd\n'
+# Linux - ALT-f
+bindkey -s '\ef' '^ucd "$(dirname "$(fzf)")"\n'
+
+bindkey -s '^x' '^ubc -lq\n'
+
+bindkey '^a' backward-word
+bindkey '^e' forward-word
+
+bindkey '^[[P' delete-char
+
+# edit line in vim with ctrl-n
+autoload edit-command-line; zle -N edit-command-line
+bindkey '^n' edit-command-line
+bindkey -M vicmd '^[[P' vi-delete-char
+bindkey -M vicmd '^e' edit-command-line
+bindkey -M visual '^[[P' vi-delete
+
+# zsh-autosuggestions
+# [ -d "$ZSH_AUTOSUGGEST" ] && {
+#   source $ZSH_AUTOSUGGEST/zsh-autosuggestions.zsh 2>/dev/null
+#   bindkey '^i' autosuggest-accept
+#   bindkey '^s' autosuggest-toggle
+#   # bindkey '^[[Z' autosuggest-accept
+# }
+
+# zsh-fast-syntax-highlighting
+[ -d "$ZSH_HIGHLIGHTING" ] && source $ZSH_HIGHLIGHTING/zsh-syntax-highlighting.zsh 2>/dev/null
+[ -d "$ZSH_FAST_HIGHLIGHTING" ] && source $ZSH_FAST_HIGHLIGHTING/fast-syntax-highlighting.plugin.zsh 2>/dev/null
+
+[ -x "$(command -v "kitty")" ] && kitty + complete setup zsh | source /dev/stdin

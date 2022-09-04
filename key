@@ -1,0 +1,15 @@
+
+
+* WM/DE 
+SUPER = Mod1
+- SUPER + Return: Open Terminal
+- SUPER + Shift + Return: Open $MENU
+- SUPER + {j,k}: change focus between windows
+- SUPER + shift + {j,k}: move between windows
+- SUPER + hl: resize master windows horizontally
+- SUPER + up: resize slave windows vertically
+
+
+# TERMINAL/MODE
+SUPER = Mod4 + Shift
+- 

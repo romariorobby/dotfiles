@@ -1,0 +1,6 @@
+#+TITLE: Chezmoi
+#+AUTHOR: Romario
+
+* chezmoi
+
+see installed [programs]

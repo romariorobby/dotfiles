@@ -1,0 +1,20 @@
+#+TITLE: ZSH
+
+* ZSH
+* Plugins
+
+  - syntax highlighting
+  - autosuggestions (disable by default)
+
+* Features
+
+  integrates with:
+  - vi mode
+  - git
+  - fzf
+
+* Keybinding
+  - ctrl-o (open lf)
+  - ctrl-x (open bc)
+  - ctrl-f (cd through fzf command)
+  - ctrl-n (edit current command to nvim) or ctrl-e (on vi insert mode)

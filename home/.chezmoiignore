@@ -1,0 +1,10 @@
+{{- if (env "CM_DEBUG") }}
+.zprofile
+.xprofile
+.xinitrc
+.profile
+{{- end }}
+
+{{- if (not (eq .chezmoi.os "android")) }}
+.termux
+{{- end }}

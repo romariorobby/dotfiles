@@ -1,0 +1,32 @@
+#!/bin/sh
+
+[ -f "$HOME/.aer" ] && . $HOME/.aer
+
+sxhkd -c ~/.config/sxhkd/sxhkdrc-$WM &
+case "$WM" in
+  "dwm"|"dwmf")
+    autostart="dunst dwmblocks"
+    for program in $autostart; do
+      pidof -s "$program" || "$program" &
+    done >/dev/null 2>&1
+    picom -b &
+    skippy-xd --start-daemon &
+    ;;
+esac
+#xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Uncomment to use Xresources colors/settings on startup
+syncthing serve --no-browser --logfile=default &
+{{- if (eq .chezmoi.osRelease.id "pop") }}
+syncthing-gtk -m &
+{{- end }}
+# For some reason `remaps` not work under popOS? possibly on ubuntu as well
+remaps &
+setbg &
+autostart="mpd"
+
+for program in $autostart; do
+  pidof -s "$program" || "$program" &
+done >/dev/null 2>&1
+{{- if (not (eq .chezmoi.osRelease.id "pop")) }}
+# Ensure that xrdb has finished running before moving on to start the WM/DE.
+[ -n "$xrdbpid" ] && wait "$xrdbpid"
+{{- end }}

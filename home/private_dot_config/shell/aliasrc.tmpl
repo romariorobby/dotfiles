@@ -1,0 +1,45 @@
+#!/bin/sh
+
+{{- if (eq .chezmoi.os "darwin") }}
+# need `coreutils` installed
+alias \
+  ls="gls -hN --color=auto --group-directories-first" \
+  la="gls -a -hN --color=auto --group-directories-first" \
+  ll="gls -l -hN --color=auto --group-directories-first" \
+  grep="grep --color=auto" \
+  rm="rm -iv" \
+{{- end }}
+
+{{- if (or (eq .chezmoi.os "linux") (eq .chezmoi.os "android")) }}
+alias \
+  ls="ls -hN --color=auto --group-directories-first" \
+  la="ls -a -hN --color=auto --group-directories-first" \
+  ll="ls -l -hN --color=auto --group-directories-first" \
+  grep="grep --color=auto" \
+  rm="rm -vI" \
+  acp="advcp -g" \
+  amv="advmv -g" \
+  cp="cp -iv" \
+  cp="cp -iv" \
+  mv="mv -iv" \
+  mkd="mkdir -pv" \
+  cl="clear" \
+  ..="cd .." \
+  ...="cd ../.." \
+  ka="killall" \
+{{- end }}
+
+alias \
+{{- if (eq .chezmoi.osRelease.id "pop") }}
+  bat="batcat" \
+{{- end }}
+  xevs='xev |	awk -F"[ )]+" "/^KeyPress/ { a[NR+2] } NR in a { printf \"%-3s %s\n\", \$5, \$8 } "' \
+  xevg="xev | grep -A6 KeyPress"\
+  v="nvim" \
+  bm="buku" \
+  z="zathura" \
+  sx="sxiv" \
+  cm="chezmoi" \
+  scrd="scrcpy --shortcut-mod=lalt+lctrl" \
+  ff="fzf" \
+  g="git"

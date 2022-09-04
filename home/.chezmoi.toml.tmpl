@@ -1,0 +1,72 @@
+{{- $personal := default false (env "CM_PERSONAL") }}
+{{- $name := default "Romario" (env "CM_NAME") }}
+{{- $git_name := default "romariorobby" (env "CM_GIT_NAME") }}
+{{- $git_email := default "romariorobby@yahoo.com" (env "CM_GIT_EMAIL")}}
+{{- $github_name := default "romariorobby" (env "CM_GITHUB_NAME")}}
+{{- $github_token := default "" (env "CM_GITHUB_TOKEN")}}
+{{- $encryption := default "" (env "CM_ENCRYPTOOL") }}
+{{- $passmgr := default "" (env "CM_PASSMGR") }}
+{{- $type := default "base" (env "CM_TYPE") -}}
+{{- $debug := default false (env "CM_DEBUG") }}
+
+
+# Generalize os variable
+{{- $osid := .chezmoi.os -}}
+{{- if hasKey .chezmoi.osRelease "id" -}}
+{{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+{{- $osidlike := "" }}
+{{- if hasKey .chezmoi.osRelease "idLike" -}}
+{{    $osidlike = .chezmoi.osRelease.idLike }}
+{{- end -}}
+
+{{- if (env "CM_ASK") }}
+{{-   $name = promptString "name" $name -}}
+{{-   $type = promptString "type" $type -}}
+{{-   $encryption = promptString "encrypt tool [gpg,age]" $encryption -}}
+{{-   $passmgr = promptString "password manager" $passmgr -}}
+{{-   $git_name = promptString "git name" $git_name -}}
+{{-   $git_email = promptString "git email" $git_email -}}
+{{-   $github_name = promptString "github name" $github_name -}}
+{{-   $github_token = promptString "github personal token {{ $git_name }}" $github_token -}}
+{{-   $debug = promptBool "debug?" $debug -}}
+{{- end }}
+
+{{- if (or $personal (eq $encryption "gpg") (env "CM_GPG") (env "CM_GPG_RECEPIENT") (eq $passmgr "pass"))  -}}
+{{-   $encryption = "gpg" }}
+{{-   if (eq $github_token "") }}
+{{-     $github_token = promptString "github personal token" $github_token -}}
+{{-   end }}
+encryption = "gpg"
+[gpg]
+{{-   if (env "CM_GPG_RECEPIENT") }}
+{{-     $gpgrecepient := default (env "CM_GPG_RECEPIENT") -}}
+recepient = {{ $gpgrecepient | quote }}
+{{-   else }}
+symmetric = "true"
+{{-   end }}
+[pinentry]
+command = "pinentry"
+{{- end }}
+
+{{- if (or (env "CM_DEBUG") $debug) }}
+[diff]
+exclude = ["scripts"]
+{{- end }}
+
+[data]
+name = {{ $name | quote }}
+type = {{ $type | quote }}
+osid = {{ $osid | quote }}
+osidlike = {{ $osidlike | quote }}
+passmgr = {{ $passmgr | quote }}
+encryption = {{ $encryption | quote }}
+debug = {{ $debug }}
+
+[data.git]
+name = {{ $git_name | quote }}
+email = {{ $git_email | quote }}
+
+[data.git.github]
+username = {{ $github_name | quote }}
+token = {{ $github_token | quote }}

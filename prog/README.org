@@ -1,0 +1,62 @@
+#+TITLE: Programs
+#+AUTHOR: Romario
+#+OPTIONS: toc:nil
+
+#+begin_quote
+*NOTE:* Currently Only supported Debian/Ubuntu and Arch Linux Distribution.
+#+end_quote
+
+* Naming Conventions
+** Type
+
+uses these with chezmoi for spesifically what packages to be installed.
+| SERVER | BASE | MINIMAL | FULL |
+|--------+------+---------+------|
+| S      | B    | M       | F    |
+
+*** SERVER/HEADLESS
+*** BASE
+*** MINIMAL
+*** FULL
+** Tag
+
+#+TBLNAME: TAG
+| MAIN | AUR | PIP | NPM | GIT |
+|------+-----+-----+-----+-----|
+| M    | A   | P   | N   | G   |
+
+*** MAIN
+installing packages through main package manager such as ~pacman~, ~apt~.
+*** AUR
+installing packaages through aur such as on Arch Linux (~paru~, ~yay~), although there some AUR-Like on ubuntu like [[https://github.com/pacstall/pacstall][pacstall]].
+**** Installing Pacstall (Ubuntu/Debian User)
+- Add Pacstall custom sources
+#+begin_src shell
+pacstall -A "https://github.com/romariorobby/aer-pacstall-program"
+#+end_src
+*** PIP
+*** NPM
+*** GIT
+** Packages
+*** Emacs
+
+you need ~emacs-28~ to work properly with [[https://github.com/doomemacs/doomemacs/][doom-emacs]]
+**** Note for Ubuntu/Debian
+
+#+begin_src shell
+sudo add-apt-repository ppa:kelleyk/emacs
+sudo apt install emacs28
+# Remove
+# sudo apt autoremove --purge emacs28
+# sudo add-apt-repository --remove ppa:kelleyk/emacs
+#+end_src
+
+see this for more https://github.com/kelleyk/ppa-emacs
+
+*** Siji Font
+**** font not detected by ~fc-list~
+    try remove ~/etc/fonts/conf.d/70-no-bitmaps~
+    then update again with ~fc-cache~
+
+** Description
+Its self-explanatory. it should concise what packages does.

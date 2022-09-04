@@ -1,0 +1,244 @@
+# vim:ft=sh
+
+# Note on Image Previews
+# For those wanting image previews, like this system, there are four steps to
+# set it up.
+# 1. ueberzug must be installed.
+# 2. The scope file (~/.config/lf/scope for me), must have a command similar to
+#    mine to generate ueberzug images.
+# 3. A `set cleaner` line as below is a cleaner script.
+# 4. lf should be started through a wrapper script (~/.local/bin/lfub for me)
+#    that creates the environment for ueberzug. This command can be be aliased
+#    in your shellrc (`alias lf="lfub") or if set to a binding, should be
+#    called directly instead of normal lf.
+
+set shellopts '-eu'
+set ifs "\n"
+set scrolloff 10
+set drawbox
+set icons
+set period 1
+set info size
+set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
+set previewer '~/.config/lf/scope'
+set cleaner '~/.config/lf/cleaner'
+# set shell bash
+# Dual pane
+# set nopreview
+# set ratios 1
+
+
+### cmds/functions
+
+cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
+
+{{- if (eq .chezmoi.os "linux") }}
+cmd setbg "$1"
+{{- end }}
+
+cmd bulkrename $vidir
+
+# required: atool
+cmd extract ${{ "{{" }}
+    clear; tput cup $(($(tput lines)/3)); tput bold
+    set -f
+    printf "%s\n\t" "$fx"
+    printf "extract?[y/N]"
+    read ans
+    [ $ans = "y" ] && aunpack $fx
+{{ "}}" }}
+
+{{- if (eq .chezmoi.os "linux") }}
+cmd open ${{ "{{" }}
+    case $(file --mime-type "$(readlink -f $f)" -b) in
+	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet)
+	    localc $fx ;;
+	application/pdf|application/vnd*|application/epub*)
+{{-   if (eq .chezmoi.osRelease.id "pop") }}
+	    setsid -f xdg-open $f ;;
+{{-   else }}
+	    setsid -f zathura $fx >/dev/null 2>&1 ;;
+{{-   end }}
+	application/pgp-encrypted)
+	    $EDITOR $fx ;;
+	text/*|application/json|inode/x-empty)
+	    $EDITOR $fx;;
+	image/vnd.djvu|application/pdf|application/octet-stream)
+{{-   if (eq .chezmoi.osRelease.id "pop") }}
+	    setsid -f xdg-open $f ;;
+{{-   else }}
+	    setsid -f zathura $fx >/dev/null 2>&1 ;;
+{{-   end }}
+	image/x-xcf)
+	    setsid -f gimp $f >/dev/null 2>&1 ;;
+	image/svg+xml)
+	    display -- $f ;;
+	image/*)
+{{-   if (eq .chezmoi.osRelease.id "pop") }}
+	    setsid -f xdg-open $f ;;
+{{-   else }}
+	rotdir $f | grep -i "\.\(png\|jpg\|jpeg\|gif\|webp\|tif\|ico\)\(_large\)*$" |
+	    setsid -f sxiv -aio 2>/dev/null | while read -r file; do
+		[ -z "$file" ] && continue
+		lf -remote "send select \"$file\""
+		lf -remote "send toggle"
+	    done & ;;
+{{-   end }}
+	audio/*)
+	    mpv --force-window=immediate --really-quiet --audio-display=no $f ;;
+	video/*)
+	    setsid -f mpv --force-window=immediate --really-quiet $f >/dev/null 2>&1 ;;
+	application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/vnd.oasis.opendocument.text)
+	  setsid -f lowriter $fx >/dev/null 2>&1 ;;
+	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|application/octet-stream|application/vnd.oasis.opendocument.spreadsheet|application/vnd.oasis.opendocument.spreadsheet-template)
+	  setsid -f localc $fx >/dev/null 2>&1 ;;
+	application/vnd.openxmlformats-officedocument.presentationml.presentation|application/vnd.oasis.opendocument.presentation-template|application/vnd.oasis.opendocument.presentation|application/vnd.ms-powerpoint)
+	  setsid -f loimpress $fx >/dev/null 2>&1 ;;
+	application/vnd.oasis.opendocument.graphics|application/vnd.oasis.opendocument.graphics-template)
+	  setsid -f lodraw $fx >/dev/null 2>&1 ;;
+	application/vnd.oasis.opendocument.formula)
+	  setsid -f lomath $fx >/dev/null 2>&1 ;;
+	application/vnd.oasis.opendocument.database)
+	  setsid -f lobase $fx >/dev/null 2>&1 ;;
+    *) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
+  esac
+{{ "}}" }}
+{{- end }}
+
+cmd delete ${{ "{{" }}
+    clear; tput cup $(($(tput lines)/3)); tput bold
+    set -f
+    printf "%s\n\t" "$fx"
+    printf "delete?[y/N]"
+    read ans
+    [ $ans = "y" ] && rm -rf -- $fx || echo "Cancelled..."
+{{ "}}" }}
+
+cmd delete_rec ${{ "{{" }}
+    if [ -z $fs ]; then
+        rm -rf $f
+    else
+        IFS=':'; echo $fs | tr " " "\n"
+        echo 'delete? [y/n]'
+        read ans
+
+        [ $ans = 'y' ] && (echo 'deleting files...' && rm -rf $fs) || (echo 'cancelled...')
+    fi
+{{ "}}" }}
+
+# Linux only?
+cmd trash ${{ "{{" }}
+  files=$(printf "$fx" | tr '\n' ';')
+  printf "Put to Trash?[y/N]"
+  read ans
+  [ $ans = "y" ] &&
+  while [ "$files" ]; do
+    # extract the substring from start of string up to delimiter.
+    # this is the first "element" of the string.
+    file=${files%%;*}
+
+	trash-put "$(basename "$file")"
+    # if there's only one element left, set `files` to an empty string.
+    # this causes us to exit this `while` loop.
+    # else, we delete the first "element" of the string from files, and move onto the next.
+    if [ "$files" = "$file" ]; then
+      files=''
+    else
+      files="${files#*;}"
+    fi
+  done
+{{ "}}" }}
+
+cmd clear_trash %trash-empty
+cmd list_trash ${{ "{{" }}
+    clear; trash-list
+{{ "}}" }}
+
+cmd restore_trash ${{ "{{" }}
+    trash-restore
+{{ "}}" }}
+
+cmd restore_trash_all ${{ "{{" }}
+    printf "are you sure?[y/N]"
+    read ans
+    [ $ans = "y" ] && while (echo '0' | trash-restore); do true; done;
+{{ "}}" }}
+
+cmd moveto ${{ "{{" }}
+    clear; tput cup $(($(tput lines)/3)); tput bold
+    set -f
+    clear; echo "Move to where?"
+    dest="$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf | sed 's|~|$HOME|')" &&
+	for x in $fx; do
+	    eval mv -iv \"$x\" \"$dest\"
+	done &&
+	    notify-send "🚚 File(s) moved." "File(s) moved to $dest."
+{{ "}}" }}
+
+cmd copyto ${{ "{{" }}
+    clear; tput cup $(($(tput lines)/3)); tput bold
+    set -f
+    clear; echo "Copy to where?"
+    dest="$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf | sed 's|~|$HOME|')" &&
+	for x in $fx; do
+	    eval cp -ivr \"$x\" \"$dest\"
+	done &&
+	    notify-send "📋 File(s) copied." "File(s) copies to $dest."
+{{ "}}" }}
+
+cmd copypath ${{ "{{" }}
+    case "$OSTYPE" in
+	darwin*)
+	    printf "%s" "$fx" | pbcopy && printf "%s" "copied $fx" ;;
+	linux*)
+	    printf "%s" "$fx" | xclip -selection clipboard && printf "%s" "copied $fx" ;;
+	*) printf "%s" "cannot copy '$fx'. system not supported" ;;
+    esac
+{{ "}}" }}
+
+# unmap 
+map r
+map gh
+
+# Mapping
+map <c-e> down
+map <c-y> up
+# map U clear
+
+map <c-f> $lf -remote "send $id select '$(fzf)'"
+# BUG: can't read ENV
+# map J $lf -remote "send $id cd $(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf)"
+# USE THIS INSTEAD
+map J $lf -remote "send $id cd $(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' -e 's/\${.*\://;s/\-\$HOME/~/;s/$HOME/~/;s/}//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf)"
+map . set hidden!
+map <c-r> reload
+
+map A push :mkdir<space>
+map a push $touch<space>
+
+map d delete
+map M moveto
+map C copyto
+map y copy
+map Y copypath
+map x cut
+
+map o &mimeopen $f
+map O $mimeopen --ask $f
+map <c-o> open
+map E<space> push :!nvim<space>
+map <c-x> extract
+map gx $$f
+map gX !$f
+map b $setbg $f
+
+# Rename
+map rA rename # at very end
+map rb bulkrename
+map ra push rA<a-b> # after extension
+map rc push rA<c-u> # New Rename
+map rI push rA<c-a> # at very beginning
+map ri push rA<a-b><a-b><a-f> # before extentions
+
+# Source Bookmarks
+source "~/.config/lf/shortcutrc"

@@ -1,0 +1,73 @@
+#!/bin/sh
+
+is_running=$(pidof tmux)
+
+sessionizer(){
+  chezdir="$HOME/.local/share/chezmoi"
+  projectdir="$(find $HOME/repos -mindepth 1 -maxdepth 1 -type d)"
+  configdir="$(find $HOME/.config -mindepth 1 -maxdepth 1 -type d)"
+  notesdir="$(find $HOME/Sync/media/document/notes -mindepth 1 -maxdepth 1 -type d)"
+  if [ -n "$2" ]; then
+    selected=$2
+  else
+    selected=$(printf "$configdir\\n$projectdir\\n$chezdir\\n$notesdir" | fzf --prompt "Sessionizer: ")
+  fi
+
+  if [ -z $selected ]; then
+    exit 0
+  fi
+
+  selected_name=$(basename "$selected" | tr . _)
+
+  if [ -z "$TMUX" ] && [ -z "$is_running" ]; then
+    tmux new-session -s $selected_name -c $selected
+    exit 0
+  fi
+
+  if ! tmux has-session -t=$selected_name 2> /dev/null; then
+    tmux new-session -ds $selected_name -c $selected
+  fi
+
+  tmux switch-client -t $selected_name
+}
+
+usage() { echo "Usage:
+	tmx [OPTIONS]
+Options:
+	-a: attach session
+	-s: sessionizer
+	-l: list-session
+        -S: terminal sharing [tmate]
+	-h: help
+	" && exit 1;}
+
+while getopts ":alsSnxh" o; do
+  case "${o}" in
+    a)
+      [ -z "$TMUX" ] || { echo "You already in tmux session"; exit 1; }
+      if [ -z "$2" ]; then 
+        # echo "No target session. -a <target>"
+        sel="$(tmux list-session | fzf | cut -d: -f1)"
+        # [ -n "$is_running" ] && { printf "Active Session: <target>: <wname> <created>\n"; tmux ls;}
+        # exit 1
+      fi
+      [ -z "$sel" ] && exit
+      # OPTARG="$sel"
+      tmux attach-session -t "$sel"
+      ;;
+    l) tmux ls; exit 1 ;;
+    s) sessionizer "$@" ;;
+    S) tmate ;;
+    n) tmux new -A -t "$2";;
+    x)
+      sel="$(tmux list-session | fzf)"
+      sel=$(cut -d: -f1 $sel)
+      tmux attach-session -t "$sel" ;;
+    # k|x) tmux kill-session -t ${OPTARG} ;;
+    # p) sessionizer "${OPTARG}" ;;
+    h) usage ;;
+    # ?) [ -z "$TMUX" ] && tmux ;;
+    *) printf "Invalid $OPTARG\n" && usage ;;
+  esac
+done
+([ -z "$*" ] && [ -z "$TMUX" ]) && tmux || echo "You already in tmux session"

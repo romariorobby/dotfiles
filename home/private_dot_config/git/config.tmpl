@@ -1,0 +1,73 @@
+# vim: ft=gitconfig
+[user]
+	name =  {{ .git.name }}
+	email = {{ .git.email }}
+
+[http]
+	cookieFile = ~/.config/git/cookies
+
+[core]
+	editor = nvim
+	attributesfile = ~/.config/git/gitattributes
+	excludesile = ~/.config/git/gitignore
+
+[github]
+	user = {{ .git.github.username }}
+
+[init]
+#	defaultBranch = master
+
+[credential]
+	helper = cache --timeout=3600
+
+
+[grep]
+	lineNumber = true
+
+[color "grep"]
+	match = cyan bold
+	selected = blue
+	context = normal
+	filename = magenta
+	linenumber = green
+	separator = yellow
+	function = blue
+
+[diff]
+	tool = nvimdiff
+#	mnemonicPrefix = true
+#	wordRegex = "[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+"
+#	compactionHeuristic = true
+
+[difftool]
+#    prompt = true
+
+[difftool "nvimdiff"]
+	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+#[merge]
+#	tool = nvimdiff
+#[mergetool]
+
+#[mergetool " "]
+
+[color]
+	ui = true
+
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+
+[color "diff"]
+	meta = 11
+	frag = magenta bold
+	commit = yellow bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+
+[include]
+	# Include Aliases
+	path = ~/.config/git/gitaliases
+

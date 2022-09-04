@@ -1,0 +1,30 @@
+# vim:ft=gitconfig
+[alias]
+a = add
+b = branch -v
+c = commit
+bv = branch -vv
+bd = branch -d
+bD = branch -D
+co = checkout
+com = checkout -m
+cone = checkout --no-edit
+ca = commit --amend
+cane = commit --amend --no-edit
+lazy = !lazygit
+tui = !lazygit
+sortdiff = !sh -c 'git diff "$@" | grep "^[+-]" | sort --key=1.2 | uniq -u -s1'
+newc = !sh -c 'git log $1@{1}..$1@{0} "$@"'
+d = diff
+dt = difftool
+dts = difftool --staged
+p = push
+m = merge
+s = status
+rh = reset --hard
+lgr = log --graph --date=relative
+lo = log --oneline
+ls = log --oneline
+su = submodule update
+ra = rebase --abort
+ri = rebase --interactive

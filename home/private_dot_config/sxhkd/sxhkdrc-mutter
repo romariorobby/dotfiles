@@ -1,0 +1,64 @@
+#vim:ft=sxhdrc
+
+# Gnome Mutter
+# Tested on popOS
+# Reload sxhkd
+super + Escape; Escape
+  pkill -USR1 -x sxhkd; \
+  notify-send "SXHKD" "Restarting configurations"
+
+super + Escape; q
+  sysact
+
+super + Escape; shift + q
+  loginctl terminate-session "$(loginctl session-status | awk 'NR==1{print $1}')"
+
+# Help Key
+super + F1
+  helpkey
+
+# Aer
+super + shift + F1
+  groff -mom $HOME/.local/share/help.mom -Tpdf | zathura -
+
+# Scratchpads
+super + mod1 + 1
+  tdrop -ma -w 50% emacs
+
+super + t; n
+  notiftog
+# Launch application
+
+# Launch {BROWSER,spotify}
+super + a; {b,s}
+  {$BROWSER,spotify}
+
+# Launch Newsboat
+super + a; n
+  $TERMINAL -e newsboat
+
+# Launch TERMINAL
+super + Return
+  $TERMINAL
+
+# Laucnh MENU
+super + shift + Return
+  [ "$MENU" = "dmenu" ] && dmenu_run || rofi -combi-modi window,drun -show combi -show-icons
+
+# Playerctl: {toggle play-pause, play,pause
+super + p; {s,b,m}; {t,p,P,s,space}
+  playerctl -p '{spotify,chromium,mpc}' {play-pause,play,pause,stop,play-pause}
+
+# Playerctl: {Previous,Next}
+super + p; {s,b}; {comma,period}
+  playerctl -p {'spotify','mpc'} {previous,next}
+
+# Playerctl: {Increase,Decrease} Volume
+super + XF86Audio{Raise,Lower}Volume
+  playerctl volume 0.1{+,-}
+
+# Playerctl: Seeking
+super + p; {s,b}; bracket{left,right}
+  playerctl -p'{spotify,chromium}' position 10{-,+}
+mod3 + a
+  $BROWSER

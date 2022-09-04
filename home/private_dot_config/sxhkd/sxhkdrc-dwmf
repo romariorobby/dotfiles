@@ -1,0 +1,266 @@
+# vim: set ft=sxhkdrc
+######
+# Keymap for dwm-flexipatch with my custom dwm-flexipatch build
+######
+# Close notification
+control + {_,shift} + BackSpace
+  dunstctl {close,close-all}
+
+# Show Notification history
+control + grave
+  dunstctl history-pop
+
+# Notification Context
+control + shift + period
+  dunstctl context
+
+# Toggle notification
+super + t ; n
+  notifytog
+
+# Help Key
+super + F1
+  helpkey
+
+# Help
+super + shift + F1
+  groff -mom $HOME/.local/share/aer.mom -Tpdf | zathura -
+
+# Workspaces and tags
+super + {_,control +} {_,shift +} {1-9}
+  dwmc {_,toggle}{viewex,tagex} {0-8}
+# Reload sxhkd
+super + Escape; Escape
+  pkill -USR1 -x sxhkd && notify-send "Hot-restart SXHKD"
+
+super + Escape; c
+  changer
+
+# Prompt sysact,quit and restart
+super + Escape; {q,Q,r}
+  {sysact,dwmc quit 0,dwmc quit 1}
+
+# Required Notmuch installed (mutt-wizard)
+# Sync neomutt
+super + Escape; e
+  mw -Y
+
+# Open sxhkdrc
+super + o; k
+  $TERMINAL -e nvim $XDG_CONFIG_HOME/sxhkd/sxhkdrc-dwmf
+
+# Open dwmblocks
+super + o; b
+  $TERMINAL -e nvim ~/.local/src/dwmblocks-async/config.h
+
+super + o; e
+  emacs
+
+# Open dwm
+super + o; period
+  $TERMINAL -e nvim ~/.local/src/dwmf/config.def.h
+
+# Launch Terminal
+super + Return
+  $TERMINAL
+
+# Swap windows
+super + space
+  dwmc zoom
+
+# Toggle {floating,sticky,fullscreen,bar}
+super + t; {space,s,f,F,b,B, super + b,g, super + m}
+  dwmc toggle{floating,sticky,fullscreen,fakefullscreen,esbar 0,esbar 1,bar,gaps,max}
+
+# toggle maximize
+super + mod1 + m
+  dwmc togglemax
+
+# toggle maximize {horizontal,vertical}
+super + mod1 + {h,j,k,l}
+  dwmc toggle{horizontal,vertical,vertical,horizontal}max
+
+# Toggle Scratchpads (predefined)
+super + mod1 + {1-6}
+  dwmc togglescratch {0-5}
+
+# Toggle Scratchpads (selected)
+super + mod1 + t ; {0-9}
+  dwmc togglescratch {10-20} && \
+    notify-send "toggle {0-9} scratchpad"
+
+# set scratchpads (selected)
+super + mod1 + space ; {0-9}
+  dwmc setscratch {10-20} && \
+    notify-send "set {0-9} scratchpad"
+
+# remove scratchpads (selected)
+super + mod1 + space ; shift + {0-9}
+  dwmc removescratch {10-20} && \
+    notify-send "remove {0-9} scratchpad"
+
+# Push/Unpush window to master
+super + {i,I}
+  dwmc incnmaster {+,-}1
+
+# Launch Dmenu
+super + shift + Return
+  [ "$MENU" = "dmenu" ] && dmenu_run || rofi -combi-modi window,drun -show combi -show-icons
+
+# Kill window
+super + q
+  dwmc killclient
+
+# Move focus
+super + {k,j}
+  dwmc focusstack {+,-}1
+
+# Swap windows (PUSH_PATCH)
+super + shift {k,j}
+  dwmc push{up,down}
+
+# Resize master
+super + {l,h}
+  dwmc setmfact {+,-}0.025
+
+# Resize Client
+super + {u,d}
+  dwmc setcfact {+,-}0.025
+
+# Launch BROWSER
+super + a; b
+  $BROWSER
+
+# Launch {ncmpcpp,newsboat}
+super + a; {m,n}
+  $TERMINAL -e {ncmpcpp,newsboat
+
+super + a; e
+  $TERMINAL -e neomutt; pkill -RTMIN+5 dwmblocks
+
+# TODO: Monitor keymap
+
+### Layout
+# Set layout {tile,float,monocle}
+super + w; {t,f,m}
+  dwmc setlayoutex {0-3}
+
+# Cycle layout
+super + w; {comma,period}
+  dwmc cyclelayout {-,+}1
+
+#### Multimedia/ FUNCTION ###
+# T440P
+
+# F1/F4: Toggle Volume/Mic
+XF86Audio{_,Mic}Mute
+  mixer toggle-{audio,mic};\
+  pkill -RTMIN+4 dwmblocks
+
+## how to use this if shift up front? {_,}
+
+# F2/F3: Inc/Dec System Volume
+XF86Audio{Raise,Lower}Volume {+ shift,_}
+  mixer volume {+,-}{5,1};\
+  pkill -RTMIN+4 dwmblocks
+
+super + XF86Audio{Raise,Lower}Volume
+  playerctl volume 0.1{+,-};\
+  pkill -RTMIN+13 dwmblocks
+
+# F5/F6: Inc/Dec Monitor Brightness
+XF86MonBrightness{Up,Down} {+ shift,_}
+  xbacklight -{inc,dec} {5,1}; \
+  pkill -RTMIN+2 dwmblocks
+
+# XF86Display 
+# 	pamixer --allow-boost -i 5
+# super + {comma,period}
+# 	playerctl {previous,next}
+#
+# super + bracket{left,right}
+# 	playerctl position 10{,+}
+
+### Media
+
+super + p; {s,b,m}; {t,p,P,s,space}
+  playerctl -p '{spotify,chromium,mpc}' {play-pause,play,pause,stop,play-pause}
+
+super + p; {s,b}; {comma,period}
+  playerctl -p {'spotify','mpc'} {previous,next}
+
+super + p; {s,b}; bracket{left,right}
+  playerctl --player '{spotify,chromium}' position 10{-,+}
+
+
+# F8: Open nmtui
+XF86WLAN 
+  case "$TERMINAL" in; \
+	"kitty") kitty --name "nmtuifloat" --class "nmtuifloat" -e nmtui ;; \
+	"st") st -n nmtuifloat -c nmtuifloat -e nmtui;; \
+  esac
+
+# F8: Open networkmanager_dmenu
+
+shift + XF86WLAN 
+  networkmanager_dmenu
+
+# XF86Tools 
+# 	pamixer --allow-boost -i 5
+
+# F10: Launch $MENU
+XF86Search 
+  [ "$MENU" = "dmenu" ] && dmenu_run || rofi -combi-modi window,drun -show combi -show-icons
+
+# F11: Launch skippy-xd
+XF86LaunchA 
+  skippy-xd --toggle-window-picker
+
+# F12: Launch $BROWSER
+XF86Explorer 
+  $BROWSER
+
+###
+## FLOATPOS_PATCH
+###
+
+# Move float window {←,↑,↓,→}
+mod3 + {h,j,k,l}
+  dwmc floatpos "{-26x 0y, 0x 26y, 0x -26y, 26x 0y}"
+
+mod3 + {u,i,m,comma}
+  dwmc floatpos "{-26x -26y, 26x -26y,-26x 26y,26x 26y}"
+
+# Client is positioned in a floating grid,
+# movement is relative to client's current position
+# NOTE: When use with Mod3(Alt_R) + mod1(ALT_L) prefix . h would not work
+#       don't know why!
+
+# ← ↓ ↑ →
+mod3 + control + {h,j,k,l}
+  dwmc floatpos "{-1p 0p, 0p 1p, 0p -1p, 1p 0p}"
+
+# ↖ ↗ · ↙ ↘
+mod3 + control + {u,i,c,m,comma}
+  dwmc floatpos "{-1p -1p, 1p -1p, 0p 0p, -1p 1p, 1p 1p}"
+
+mod3 + x
+  dwmc floatpos "0p 0p"
+
+# Resize client, client center position is fixed
+# which means that client expands in all directions
+# ← ↓ ↑ →
+mod3 + shift + {h,j,k,l}
+  dwmc floatpos "{-26w 0h, 0w 26h, 0w -26h, 26w 0h}"
+
+# ↖ ↗ · ↙ ↘
+mod3 + shift + {u,i,c,m,comma}
+  dwmc floatpos "{-26w -26h, 26w -26h,800W 800H,-26w 26h,26w 26h}"
+
+# allow moving windows between monitor
+# ← ↓ ↑ →
+mod3 + super + {h,j,k,l}
+  dwmc floatpos "{-26a 0a, 0a 26a, 0a -26a, 26a 0a}"
+# ↖ ↗ ↙ ↘
+mod3 + super + {u,i,m,comma}
+  dwmc floatpos "{-26a -26a, 26a -26a, -26a 26a, 26a 26a}"

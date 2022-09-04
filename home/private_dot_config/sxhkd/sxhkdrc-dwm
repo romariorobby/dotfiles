@@ -1,0 +1,91 @@
+# vim: ft=sh
+# DIY DWM
+control + {_,shift} + BackSpace
+  udunstctl {close,close-all}
+
+control + grave
+  dunstctl history-pop
+
+control + shift + period
+  dunstctl context
+super + t ; n
+  dunstctl set-paused toggle && pkill -RTMIN+15 dwmblocks
+# Help Key
+super + F1
+  helpkey
+
+super + shift + F1
+  groff -mom /usr/local/share/dwm/rarbs.mom -Tpdf | zathura -
+
+# Reload sxhkd
+super + Escape; Escape
+  pkill -USR1 -x sxhkd; \
+    notify-send "Hot-restart SXHKD"
+######
+##DWM
+######
+# Launch Terminal
+super + Return
+  $TERMINAL
+
+super + shift + Return
+  [ "$MENU" = "dmenu" ] && dmenu_run || rofi -combi-modi window,drun -show combi -show-icons
+
+# Push/Unpush window to master
+super + {i,I}
+	dwmc incnmaster {+,-}1
+
+# Resize master
+super + {l,h}
+	dwmc setmfact {+,-}0.025
+
+# Swap windows
+super + space
+	dwmc zoom
+
+# Move focus
+super + {k,j}
+	dwmc focusstack {+,-}1
+
+# Kill window
+super + q
+	dwmc killclient
+
+# Prompt sysact,quit and restart
+super + Escape; {q,Q}
+	{sysact,dwmc quit}
+
+# Workspaces and tags
+# super + {_,control +} {_,shift +} {1-9}
+# 	dwmc {_,toggle}{viewex,tagex} {0-8}
+super + Tab
+  dwmc viewexes
+
+### Layout
+super + w; {t,f,m}
+	dwmc setlayoutex {0-3}
+
+# Monitor
+super + m; {_,shift +} {period,comma}
+  dwmc {focusmon,tagmon} {+,-}1
+
+# Toggle {floating,sticky,fullscreen,bar}
+super + t; {space,b}
+  dwmc toggle{floating,bar}
+
+super + o; k
+  $TERMINAL -e nvim $XDG_CONFIG_HOME/sxhkd/sxhkdrc-dwm
+
+super + o; b
+  $TERMINAL -e nvim ~/.local/src/dwmblocks-async/config.h
+
+super + o; v
+  $TERMINAL -e nvim ~/.config/nvim/init.lua
+
+super + o; period
+  $TERMINAL -e nvim ~/.local/src/dwmf/config.def.h
+
+super + a; b
+  $BROWSER
+super + a; {m,n}
+  $TERMINAL -e {ncmpcpp,newsboat}

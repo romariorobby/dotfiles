@@ -3,4 +3,4 @@
 
 * chezmoi
 
-see installed [programs]
+see installed [[https://github.com/romariorobby/dotfiles/tree/master/prog][programs]]

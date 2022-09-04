@@ -29,11 +29,13 @@ uses these with chezmoi for spesifically what packages to be installed.
 installing packages through main package manager such as ~pacman~, ~apt~.
 *** AUR
 installing packaages through aur such as on Arch Linux (~paru~, ~yay~), although there some AUR-Like on ubuntu like [[https://github.com/pacstall/pacstall][pacstall]].
-**** Installing Pacstall (Ubuntu/Debian User)
+**** Installing using Pacstall (Ubuntu/Debian User)
 - Add Pacstall custom sources
 #+begin_src shell
 pacstall -A "https://github.com/romariorobby/aer-pacstall-program"
 #+end_src
+**** Installing using makedeb (Ubuntu/Debian User)
+     TODO: Makedeb
 *** PIP
 *** NPM
 *** GIT

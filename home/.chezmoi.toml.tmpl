@@ -6,7 +6,7 @@
 {{- $github_token := default "" (env "CM_GITHUB_TOKEN")}}
 {{- $encryption := default "" (env "CM_ENCRYPTOOL") }}
 {{- $passmgr := default "" (env "CM_PASSMGR") }}
-{{- $type := default "base" (env "CM_TYPE") -}}
+{{- $profile := default "base" (env "CM_PROFILE") -}}
 {{- $debug := default false (env "CM_DEBUG") }}
 
 
@@ -21,15 +21,15 @@
 {{- end -}}
 
 {{- if (env "CM_ASK") }}
-{{-   $name = promptString "name" $name -}}
-{{-   $type = promptString "type" $type -}}
-{{-   $encryption = promptString "encrypt tool [gpg,age]" $encryption -}}
-{{-   $passmgr = promptString "password manager" $passmgr -}}
-{{-   $git_name = promptString "git name" $git_name -}}
-{{-   $git_email = promptString "git email" $git_email -}}
-{{-   $github_name = promptString "github name" $github_name -}}
-{{-   $github_token = promptString "github personal token {{ $git_name }}" $github_token -}}
-{{-   $debug = promptBool "debug?" $debug -}}
+{{-   $name = promptString "Enter your name" $name -}}
+{{-   $profile = promptString "Enter Profile/Type [server,base,minimal,full]" $profile -}}
+{{-   $encryption = promptString "Enter Encryption program [gpg,age]" $encryption -}}
+{{-   $passmgr = promptString "Enter Password Manager" $passmgr -}}
+{{-   $git_name = promptString "Enter git name" $git_name -}}
+{{-   $git_email = promptString "Enter git email" $git_email -}}
+{{-   $github_name = promptString "Enter Github name" $github_name -}}
+{{-   $github_token = promptString (printf "Enter Github personal token for [%s]" $git_name) $github_token -}}
+{{-   $debug = promptBool "Try on test mode?" $debug -}}
 {{- end }}
 
 {{- if (or $personal (eq $encryption "gpg") (env "CM_GPG") (env "CM_GPG_RECEPIENT") (eq $passmgr "pass"))  -}}
@@ -56,7 +56,7 @@ exclude = ["scripts"]
 
 [data]
 name = {{ $name | quote }}
-type = {{ $type | quote }}
+profile = {{ $profile | quote }}
 osid = {{ $osid | quote }}
 osidlike = {{ $osidlike | quote }}
 passmgr = {{ $passmgr | quote }}

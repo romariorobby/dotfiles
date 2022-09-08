@@ -4,3 +4,23 @@
 * chezmoi
 
 see installed [[https://github.com/romariorobby/dotfiles/tree/master/prog][programs]]
+* Environment Variable
+** ~CM_PROFILE~
+   It's case-senstive it's should use lowercase, for example ~CM_PROFILE=full~
+*** ~server/headless~
+*** ~base~
+    Base configuraions.
+    - tmux
+    - git
+    - kitty
+    - x11
+    - shell
+    - zsh
+*** ~minimal~
+    Minimal configuration same as ~base~ configuration with extra esssential program i need.
+    - mpv (use ~iina~ on mac)
+    - rofi/dmenu
+    - lf
+*** ~full~
+    Installed all programs and apply all configuration.
+*** TODO: Desktop

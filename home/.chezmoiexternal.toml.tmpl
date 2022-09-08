@@ -1,7 +1,0 @@
-# vim:ft=toml
-{{- if (or (eq .type "minimal") (eq .type "full")) }}
-[".config/mpv/scripts/mpvSockets.lua"]
-  type = "file"
-  url = "https://raw.githubusercontent.com/wis/mpvSockets/master/mpvSockets.lua"
-  refreshPeriod = "168h"
-{{- end }}

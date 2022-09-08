@@ -10,6 +10,7 @@ hls  ${XDG_DATA_HOME:-$HOME/.local/share}
 hlS  $HOME/.local/src
 hlb  $HOME/.local/bin
 hs   $HOME/Sync
+hr   $HOME/repos
 h    $HOME
 zm   /mnt
 zt   /tmp

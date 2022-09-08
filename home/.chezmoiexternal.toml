@@ -1,0 +1,12 @@
+# vim:ft=toml
+{{- if (or (eq .profile "minimal") (eq .profile "full")) }}
+[".config/mpv/scripts/mpvSockets.lua"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/wis/mpvSockets/master/mpvSockets.lua"
+    refreshPeriod = "168h"
+# Chemacs
+[".emacs.d"]
+    type = "git-repo"
+    url = "https://github.com/plexus/chemacs2.git"
+    refreshPeriod = "168h"
+{{- end }}

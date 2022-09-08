@@ -1,0 +1,21 @@
+{{- if (eq .passmgr "bitwarden") -}}
+{{-   if (eq .osid "linux-arch") -}}
+{{-     (bitwarden "item" "archlaptop-ed25519priv").notes -}}
+{{-   else if (eq .osid "linux-pop") -}}
+{{-     (bitwarden "item" "poplaptop-ed25519priv").notes -}}
+{{-   else if (eq .chezmoi.os "darwin") -}}
+{{-     (bitwarden "item" "macbook-ed25519priv").notes -}}
+{{-   else if (eq .chezmoi.os "android") -}}
+{{-     (bitwarden "item" "android-ed25519priv").notes -}}
+{{-   end -}}
+{{- else if (eq .passmgr "pass") -}}
+{{-   if (eq .osid "linux-arch") -}}
+{{-     passRaw "ssh/archlaptop-ed25519priv" -}}
+{{-   else if (eq .osid "linux-pop") -}}
+{{-     passRaw "ssh/poplaptop-ed25519priv" -}}
+{{-   else if (eq .osid "darwin") -}}
+{{-   	passRaw "ssh/macbook-ed25519priv" -}}
+{{-   else if (eq .osid "android") -}}
+{{-     passRaw "ssh/android-ed25519priv" -}}
+{{-   end -}}
+{{- end -}}

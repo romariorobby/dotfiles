@@ -11,10 +11,12 @@
 
 
 # Generalize os variable
+# you need change manually if you installed "manjaro", "endevaour" or any distro derivates
 {{- $osid := .chezmoi.os -}}
 {{- if hasKey .chezmoi.osRelease "id" -}}
 {{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
 {{- end -}}
+# Leave here for now. it will retrieve parent distro like arch,ubuntu if you are using distro derivates
 {{- $osidlike := "" }}
 {{- if hasKey .chezmoi.osRelease "idLike" -}}
 {{    $osidlike = .chezmoi.osRelease.idLike }}

@@ -1,0 +1,11 @@
+* Generating
+
+** EdDSA (recommended)
+#+BEGIN_SRC shell
+ssh-keygen -t ed25519 -a 100
+#+END_SRC
+** RSA
+#+BEGIN_SRC shell
+ssh-keygen -t rsa -b 4096 -o -a 100
+#+END_SRC
+

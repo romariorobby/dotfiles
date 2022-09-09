@@ -1,0 +1,7 @@
+#+TITLE: Pass
+
+
+* Requirement
+  - GPG
+  - Github token (if you store on private repository on Github)
+

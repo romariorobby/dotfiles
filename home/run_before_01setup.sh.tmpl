@@ -1,0 +1,39 @@
+#!/bin/sh
+
+. {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
+
+passmgr="{{ .passmgr }}"
+ghusername="{{ .git.github.username }}"
+ghtoken="{{ .git.github.token }}"
+encryption="{{ .encryption }}"
+# TODO: Read from chezmoi.toml instead
+passgitreponame="pass"
+
+pass_setup(){
+  export PASSWORD_STORE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/password-store"
+  while [ -z "$ghtoken" ] || [ -z "$ghusername" ] || [ -z "$passgitreponame" ] || [ "$status" != 0 ] ; do
+    while [ -z "$ghusername" ]; do
+      read -p "Your github username: " username
+      [ -z "$username" ] && err "Username can't be empty."
+      ghusername="$username"
+    done
+    while [ -z "$passgitreponame" ]; do
+      read -p "Your pass repository name: " reponame
+      [ -z "$reponame" ] && err "repository can't be empty."
+      passgitreponame="$reponame"
+    done
+    while [ -z "$ghtoken" ]; do
+      inputpass "$ghusername - Token"
+      [ -z "$pass1" ] && err "token can't be empty."
+      ghtoken="$pass1"
+    done
+    [ -d "$PASSWORD_STORE_DIR" ] && mv $PASSWORD_STORE_DIR $PASSWORD_STORE_DIR-$(date +%y%m%d-T%H%M).bak
+    git clone https://$ghusername:$ghtoken@github.com/$ghusername/$passgitreponame.git $PASSWORD_STORE_DIR 2>/dev/null; status="$?"
+    # & _spinner "Cloning pass repo..."
+    [ "$status" != 0 ] && { err "Possibly wrong token/username/reponame"; unset ghusername ghtoken passgitreponame; } || suc "Pass setup completed"
+  done
+}
+
+if [ "$passmgr" = "pass" ]; then
+  [ "$encryption" = "gpg" ] && pass_setup || err "PASS: GPG not set. Aborting.."
+fi

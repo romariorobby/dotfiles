@@ -1,5 +1,4 @@
 #!/bin/sh
-
 CM_LOG=${CM_LOG:-true}
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
 
@@ -7,8 +6,8 @@ log "Start decrypt.sh"
 
 encryption="{{ .encryption }}"
 
-[ -z "$encryption" ] && { log "Aborting decrypt.sh [ No Encryption ]"; return 1; }
-
+[ -z "$encryption" ] && { log "Aborting decrypt.sh [ No Encryption ]"; }
+{{- if (eq .encryption "gpg") }}
 targetdir="{{ joinPath .chezmoi.sourceDir "/private_dot_local/private_share/encrypted" }}"
 
 files=$(find $targetdir -type f -iname "*.asc")
@@ -43,3 +42,5 @@ for file in $files; do
 
   log "Decrypting $tail"
 done
+
+{{- end -}}

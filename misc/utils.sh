@@ -1,5 +1,5 @@
 #!/bin/sh
-
+LOG_FILE="$HOME/.cache/chezmoi/install.log"
 err () { printf "\33[2K\r\033[1;31m%s\033[0m\n" "$*" >&2; }
 suc () { printf "\33[2K\r\033[1;32m%s\033[0m\n" "$*"; }
 die () { err "$*"; exit 1; }
@@ -40,6 +40,21 @@ contains() {
         return 0    # $substring is in $string
     else
         return 1    # $substring is not in $string
+    fi
+}
+
+log(){
+    [ "$CM_LOG" = false ] && return 1
+    if [ -n "$1" ]; then
+        message="$1"
+        echo "[$(date '+%H:%M:%S')]: ${message}" >>"${LOG_FILE}"
+    else
+        # Command output
+        echo "*** COMMAND OUTPUT ***" >>"${LOG_FILE}"
+        while read -r message; do
+            echo "${message}" >>"${LOG_FILE}"
+        done
+        echo "*** END OF COMMAND OUTPUT ***" >>"${LOG_FILE}"
     fi
 }
 

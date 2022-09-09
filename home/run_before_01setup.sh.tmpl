@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
+log "Start setup.sh"
 
 passmgr="{{ .passmgr }}"
 ghusername="{{ .git.github.username }}"

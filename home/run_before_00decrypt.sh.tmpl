@@ -1,6 +1,13 @@
 #!/bin/sh
 
+CM_LOG=${CM_LOG:-true}
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
+
+log "Start decrypt.sh"
+
+encryption="{{ .encryption }}"
+
+[ -z "$encryption" ] && { log "Aborting decrypt.sh [ No Encryption ]"; return 1; }
 
 targetdir="{{ joinPath .chezmoi.sourceDir "/private_dot_local/private_share/encrypted" }}"
 
@@ -12,7 +19,7 @@ for file in $files; do
   dir="${file%/*}"
   # base="${file%.*}"
   # Decrypt gpg
-  while [ ! -f "$dir/out/${tail%.*}" ]; do
+  while [ ! -f $dir/out/$realtail ]; do
     inputpass "$tail"
     echo "Your pass: $pass1"
     mkdir -p "$dir/out"
@@ -33,4 +40,6 @@ for file in $files; do
     aunpack $file
     echo "extracting [$realtail] -> $dir/out" || err "ERROR: Extracting failed"
   fi
+
+  log "Decrypting $tail"
 done

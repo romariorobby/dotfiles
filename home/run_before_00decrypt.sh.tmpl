@@ -1,0 +1,36 @@
+#!/bin/sh
+
+. {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
+
+targetdir="{{ joinPath .chezmoi.sourceDir "/private_dot_local/private_share/encrypted" }}"
+
+files=$(find $targetdir -type f -iname "*.asc")
+
+for file in $files; do
+  tail="${file##*/}"
+  realtail="${tail%.*}"
+  dir="${file%/*}"
+  # base="${file%.*}"
+  # Decrypt gpg
+  while [ ! -f "$dir/out/${tail%.*}" ]; do
+    inputpass "$tail"
+    echo "Your pass: $pass1"
+    mkdir -p "$dir/out"
+    (
+      gpg --quiet --batch --pinentry-mode loopback --passphrase "$pass1" --output "$dir/out/$realtail" --decrypt "$file" 2>/dev/null && suc "Successfully decrypted [$tail]" || err "Possibly wrong password. Retype password again"
+    ) & _spinner "Decrypting files"
+  done
+
+  # Exctract gnupg -> $HOME
+  if contains "$tail" "gnupg"; then
+    if [ -d "$HOME/.gnupg" ]; then
+      suc "Existing gnupg detected. Backup and removing old gnupg"
+      mv $HOME/.gnupg $HOME/.gnupg-$(date +%y%m%d-T%H%M).bak && rm -rf $HOME/.gnupg
+    fi
+    aunpack --quiet -X $HOME $dir/out/$realtail
+    suc "extracting $realtail -> $HOME/.gnupg" || err "ERROR: Extracting failed"
+  else
+    aunpack $file
+    echo "extracting [$realtail] -> $dir/out" || err "ERROR: Extracting failed"
+  fi
+done

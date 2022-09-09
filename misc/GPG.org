@@ -1,0 +1,13 @@
+#+TITLE: GPG
+
+
+* Generate gpg key
+  #+BEGIN_SRC shell
+  gpg --full-gen-key
+  #+END_SRC
+
+* Export to your private key
+  #+BEGIN_SRC shell
+  gpg --armor --export-secret-keys <YOUREMAILADDRESS>
+  #+END_SRC
+

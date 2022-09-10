@@ -7,12 +7,15 @@
 #+end_quote
 
 * Naming Conventions
-** Type
+** Profile
 
+#+TBLNAME: Profile
 uses these with chezmoi for spesifically what packages to be installed.
 | SERVER | BASE | MINIMAL | FULL |
 |--------+------+---------+------|
 | S      | B    | M       | F    |
+
+- *NOTE*: If there's 'X' on PROFILE there will be ignored.
 
 *** SERVER/HEADLESS
 *** BASE
@@ -25,10 +28,13 @@ uses these with chezmoi for spesifically what packages to be installed.
 |------+-----+-----+-----+-----|
 | M    | A   | P   | N   | G   |
 
+- *NOTE*: If there's 'X' on tag there will be ignored.
+- *NOTE*: If there's suffix 'P' on tag AUR(A) it means installed on personal PKGBUILDS.
 *** MAIN
 installing packages through main package manager such as ~pacman~, ~apt~.
 *** AUR
 installing packaages through aur such as on Arch Linux (~paru~, ~yay~), although there some AUR-Like on ubuntu like [[https://github.com/pacstall/pacstall][pacstall]].
+TODO: installation script AUR? for ubuntu/debian
 **** Installing using Pacstall (Ubuntu/Debian User)
 - Add Pacstall custom sources
 #+begin_src shell
@@ -37,8 +43,11 @@ pacstall -A "https://github.com/romariorobby/aer-pacstall-program"
 **** Installing using makedeb (Ubuntu/Debian User)
      TODO: Makedeb
 *** PIP
+    pip
 *** NPM
+    npm
 *** GIT
+    ?
 ** Packages
 *** Emacs
 

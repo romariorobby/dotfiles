@@ -1,0 +1,101 @@
+#!/bin/sh
+
+. {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
+osid="{{ .osid }}"
+id="{{ .chezmoi.osRelease.id }}"
+profile="{{ .profile }}"
+# Normalize all distro derivates (like manjaro,pop) -> their parent distro
+case "$id" in
+  "pop")
+    osid="linux-debian"
+    pkgcmd="apt-get install -q -y"
+    aur="una install"
+    maininstalled=$(dpkg --get-selections | cut -f1)
+    # makecmd="makedeb"
+    # aurinstalled=$maininstalled
+    ;;
+  "arch"|"endeavour"|"manjaro")
+    osid="linux-arch"
+    pkgcmd="pacman -S --noconfirm"
+    aur="paru -S --noconfirm"
+    makecmd="makepkg"
+    maininstalled=$(pacman -Qq) #?
+    aurinstalled=$(pacman -Qqm)
+    ;;
+  *)
+    if [ "$osid" = "darwin" ]; then
+      pkgcmd="brew install"
+    fi
+    ;;
+esac
+
+# progsfile="{{ joinPath .chezmoi.workingTree "/prog" }}/test.csv"
+progsfile="{{ joinPath .chezmoi.workingTree "/prog" }}/$osid.csv"
+
+case "$profile" in
+  "server"|"headless") abb="SH";;
+  "base") abb="B";;
+  "minimal") abb="M";;
+  "full") abb="F" ;;
+  *) die "Unknown \`$profile\` profile"
+esac
+
+installpkg(){
+   sudo $pkgcmd "$1" >/dev/null 2>&1
+}
+
+maininstall() {
+  echo "$maininstalled" | grep -q "^$1$" && { echo "($n/$total) MAIN: $1 already installed"; return 1; }
+  (installpkg "$1" && { suc "($n/$total) MAIN: Installed $1"; log "Installed $1"; } || err "($n/$total) MAIN: can't installed $1") & _spinner "($n/$total) MAIN: Installing $1"
+}
+
+# TODO: Make it work for debian/ubuntu (see makedeb.org)
+aurinstall(){
+  echo "$aurinstalled" | grep -q "^$1$" && { echo "($n/$total) AUR: $1 already installed"; return 1; }
+  $aur "$1" >/dev/null 2>&1
+}
+
+npminstall(){
+  [ -x "$(command -v "npm")" ] || installpkg npm >/dev/null 2>&1
+  ( yes | npm install "$1" >/dev/null 2>&1 && suc "($n/$total) NPM: Installed $1" || err "NPM: can't installed $1" ) & _spinner "($n/$total) NPM: Installing $1"
+}
+
+pipinstall(){
+  [ -x "$(command -v "pip")" ] || installpkg python-pip >/dev/null 2>&1 || installpkg python3-pip >/dev/null 2>&1
+  ( yes | pip install "$1" >/dev/null 2>&1 && { suc "($n/$total) PIP: Installed $1"; log "Installed $1"; } || err "($n/$total) PIP: can't installed $1" ) & _spinner "($n/$total) Installing $1"
+}
+
+# TODO:
+#   - list all personal PKGBUILDS
+#   - check if exist
+makepkginstall(){
+  echo "AP: $n $makecmd -si $1"
+}
+
+installationloop(){
+  # Filter only selected profile and  | remove tag with X Char
+  #1.  [ -f "$progsfile" ] && grep "^\w\+\?[$abb]" $progsfile | grep -v ",\w\+\?[X]" > /tmp/progs.csv
+  #2.  [ -f "$progsfile" ] && grep "^[SHBMF]\+\?[$abb]" $progsfile | grep -v ",\w\+\?[X]" > /tmp/progs.csv
+  # [ -f "$progsfile" ] && grep -v "^\w\+\?[X]" $progsfile | grep "^\w\+\?[$abb]" | grep -v ",\w\+\?[X]" > /tmp/progs.csv
+
+  # NOTE: Remove X on PROFILE or TAG if there any and then piped(|) to filter only selected profile
+  [ -f "$progsfile" ] && grep -v "^\w\+\?[X]\|,\w\+\?[X]" $progsfile | grep "^\w\+\?[$abb]" > /tmp/progs.csv
+  cat /tmp/progs.csv
+  exit 1
+  total=$(wc -l < /tmp/progs.csv)
+  while IFS="," read -r profile tag program desc; do
+    n=$((n + 1))
+    case "$tag" in
+      "M") maininstall "$program" "$desc" ;;
+      "A") aurinstall "$program" "$desc" ;;
+      "N") npminstall "$program" "$desc" ;;
+      "P") pipinstall "$program" "$desc" ;;
+      # "AP") makepkginstall "$program" ;;
+      # "G") gitmakeinstall "$program" ;;
+    esac
+  done < /tmp/progs.csv
+  echo "Installing $total programs"
+}
+log "Start install packages"
+echo "===== $profile installation =====" && sleep 1s
+installationloop

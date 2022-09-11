@@ -1,0 +1,27 @@
+#+TITLE: Statusbar Blocks
+
+This blocks made for dwmblocks. statusbar for dwm
+
+* Requirement
+- [[https://github.com/stark/siji][Siji]] to properly display icon (optional)
+
+* Config 
+  Please refer block number with your dwmblocks program
+* Blocks
+** Battery
+
+*** Requirement
+- xbacklight
+
+** Date
+
+*** Requirement
+- calcurse
+
+** Volume
+
+*** Requirement
+- pamixer
+
+** Packages
+*** Requirement

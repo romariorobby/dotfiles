@@ -1,0 +1,137 @@
+#!/bin/sh
+
+# siji or leave it empty
+BLOCK_FONT=""
+BLOCK_FONTSIZE="small"
+
+# TODO:
+# STATUS2D="$(grep STATUS2D_PATCH ~/.local/src/dwm/patches.def.h | awk '{print $3}')"
+# STATUS2D_XRDB="$(grep STATUS2D_XRDB ~/.local/src/dwm/patches.def.h | awk '{print $3}')"
+# XRDB="$(grep XRDB_PATCH ~/.local/src/dwm/patches.def.h | awk '{print $3}')"
+# case "$WM" in
+#     "dwmf") ;;
+#     "dwm") ;;
+# esac
+# DWM
+STATUS2D=1
+STATUS2D_XRDB=0
+XRDB=0
+
+case "$DISTRO" in
+	"pop") pkgcmd_uplist="apt list --upgradable 2>/dev/null | sed '1d'"
+		if [ -f "/usr/bin/nala" ]; then
+			pkgcmd_up="sudo nala update && sudo nala upgrade -y"
+		else
+			pkgcmd_up="sudo apt update -y && sudo apt upgrade -y"
+		fi
+		;;
+	"arch") pkgcmd_uplist="pacman -Qu"
+		if [ -f "/usr/bin/yay" ]; then
+			aurcmd_up="yay -Syu"
+		elif [ -f "/usr/bin/paru" ]; then
+			aurcmd_up="paru -Syu"
+		fi
+		;;
+esac
+
+if [ "$BLOCK_FONT" = "siji" ]; then
+	ICON_NEWS=""
+	ICON_MAIL=""
+	ICON_MAILUP=""
+	ICON_BACKLIGHT=""
+	ICON_WARNBACKLIGHT=""
+	ICON_ARCH=""
+	ICON_WIFI=""
+	ICON_WIRED=""
+	ICON_CLOCK=""
+	ICON_DEBUNTU="U"
+else
+	ICON_NEWS="N:"
+	ICON_MAIL="M:"
+	ICON_MAILUP="U:"
+	ICON_BACKLIGHT="B"
+	ICON_WARNBACKLIGHT="!"
+	ICON_ARCH="P:"
+	ICON_DEBUNTU="P:"
+	ICON_WIFI="W:"
+	ICON_WIRED="E:"
+	ICON_CLOCK="C:"
+fi
+
+# refer this to dwmblocks-async/config.h
+# Block Number dwmblcoks
+BLOCKN_CALENDAR=1
+BLOCKN_BATTERY=2
+BLOCKN_INTERNET=3
+BLOCKN_VOLUME=4
+BLOCKN_MAIL=5
+BLOCKN_TORRENT=6
+BLOCKN_NEWS=7
+BLOCKN_TASK=8
+BLOCKN_PACKAGE=9
+BLOCKN_HELP=10
+BLOCKN_RECORD=11
+BLOCKN_CLOCK=12
+
+
+if [ "$STATUS2D" -eq 1 ] && [ "$STATUS2D_XRDB" -ne 1 ]; then
+    fg_norm="^c#d5c4a1^"
+    fg_norm2="^c#d5c4a1^"
+    fg_red="^c#cc241d^"
+    fg_yellow="^c#d79921^"
+    fg_blue="^c#458588^"
+    fg_green="^c#98971a^"
+    fg_orange="^c#d65d0e^"
+else
+    fg_norm="^C7^"
+    fg_red="^C1^"
+    fg_green="^C2^"
+    fg_yellow="^C3^"
+    fg_blue="^C4^"
+    fg_orange="^c#d65d0e^"
+fi
+
+if [ "$BLOCK_FONT" = "siji" ]; then
+    if [ "$BLOCK_FONTSIZE" = "big" ]; then
+	# Big
+	bat1=""
+	bat2=""
+	bat3=""
+	bat4=""
+	bat5=""
+	bat6=""
+	bat7=""
+	bat8=""
+	bat9=""
+	bat10=""
+	batcharge=""
+	batalt=""
+    else
+	bat1=""
+	bat2=""
+	bat3=""
+	bat4=""
+	bat5=""
+	bat6=""
+	bat7=""
+	bat8=""
+	bat9=""
+	bat10=""
+	batcharge=""
+	batalt=""
+    fi
+else
+    bat1=""
+    bat2=""
+    bat3=""
+    bat4=""
+    bat5=""
+    bat6=""
+    bat7=""
+    bat8=""
+    bat9=""
+    bat10=""
+    batcharge=""
+    batlow=""
+    batalt=""
+fi

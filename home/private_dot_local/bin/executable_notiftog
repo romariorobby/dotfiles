@@ -1,0 +1,21 @@
+#!/bin/sh
+if [ "$WM" = "mutter" ]; then
+  if [ "$(gsettings get org.gnome.desktop.notifications show-banners)" = true ]; then
+    notify-send -i user-busy "Notification are disabled" && sleep 5s
+    gsettings set org.gnome.desktop.notifications show-banners false
+  else
+    gsettings set org.gnome.desktop.notifications show-banners true
+    notify-send -i user-available "Notification are enabled"
+  fi
+else
+  if [ "$(dunstctl is-paused)" = "true" ]; then
+    dunstctl set-paused false
+    dunstctl close-all
+    notify-send -u low "Dunst Activated" "Notification will appear now"
+  else
+    notify-send -u critical "Dunst Deactivated [DND Mode]"\
+      "You will <i><b>NOT</b></i> see notification from now on" && sleep 5s
+          dunstctl set-paused true
+  fi
+  # pkill -RTMIN+15 dwmblocks
+fi

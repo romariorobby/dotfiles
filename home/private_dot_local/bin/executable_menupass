@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# This script is the SUDO_ASKPASS variable, meaning that it will be used as a
+# password prompt if needed.
+[ -f "$HOME/.aer" ] && . $HOME/.aer
+
+case "$MENU" in
+  "dmenu") cmd="dmenu -P";;
+  "rofi") cmd="rofi -dmenu -password";;
+  *) cmd="rofi -dmenu -password"
+esac
+
+if [ "$MENU" = "dmenu" ]; then
+  $cmd -p "$1" <&- && echo
+else
+  $cmd -p "Password:"\
+    -no-fixed-num-lines\
+    -theme themes/menupass.rasi
+fi

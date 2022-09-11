@@ -1,0 +1,15 @@
+#!/bin/sh
+
+url="$1"
+title="$2"
+# description="$3"
+# feed_title="$4"
+
+printf "Title: ${title}\nURL: ${url}\n"
+read -p "Enter some tags comma seperated: " tags
+
+if [ ! "$tags" ]; then
+  tags="newsboat"
+fi
+
+buku --nostdin -a "$url" "$tags" --title "$title" >/dev/null || printf "Bookmark Existed"

@@ -1,0 +1,99 @@
+#!/bin/sh
+
+error(){ printf "\033[1;31mError:\033[0m $*\n" 1>&2; }
+
+if [ -f "/etc/os-release" ] || [ -f "/etc/lsb-release" ]; then
+  for file in /etc/os-release; do
+    . "$file" && break
+  done
+fi
+
+distro="${ID_LIKE:-${ID}}"
+pkgdir="$HOME/repos/PKGBUILDs"
+case "$distro" in
+  *ubuntu*|*pop*) pkgdir="$pkgdir/deb" ;;
+  *arch*) ;;
+  *) error "Not Supported"
+esac
+
+packages="$(find $pkgdir -maxdepth 1 -mindepth 1 -type d -not -name '.git' -not -name 'deb')"
+for head in $packages; do
+  packages_head="$packages_head\n$(basename "$head")"
+done
+
+
+success(){
+  printf "\033[1;31mError:\033[0m $*\n"
+
+}
+
+install(){
+  printf "$packages_head" | grep -q "^$1$" || { error "\`$1\` Not Found"; sleep 1s; return 1; }
+  printf "Installing $1\n" && sleep 1s
+  [ ! -z "$EDIT" ] && {
+    printf "Editing $1 PKGBUILD...\n"
+    $EDITOR "$pkgdir/$1/PKGBUILD";
+    unset EDIT
+  }
+}
+
+addpackage(){
+  [ -z "$1" ] && { echo "type name of your program you want to add,please."; exit 1;}
+  printf "add: \033[1;32m$pkgdir/$1/PKGBUILD\033[0m \nYou really sure want to add this?[Y/N]"
+  read -r yn
+  case "$yn" in
+    [Yy]*) ;;
+    *) return 1 ;;
+  esac
+  [ -d "$pkgdir/$1" ] || [ -f "$pkgdir/$1/PKGBUILD" ] && error "Packages already exists"
+  mkdir -vp $pkgdir/$1 && touch $pkgdir/$1/PKGBUILD
+}
+
+help() {
+  printf "usage: aur <COMMAND> [PACKAGES]
+commands:
+  install       install a package
+    --edit      to view PKGBUILD
+  help          help
+"
+}
+
+
+[ -z "$1" ] && help
+case "$1" in
+  "-P") addpackage "$2" ;;
+  "cd") cd "$pkgdir" && exec $SHELL ;;
+  "-s")
+    # TODO: https://mpr.makedeb.org/pkgbase.gz
+    for x in "$@"; do
+      echo "$packages_head" | grep "^$x$"
+    done
+    ;;
+  "-l"|"list")
+    if [ -z "$2" ]; then
+      for x in $packages; do
+        echo "$(basename "$x")"
+      done
+    elif [ "$2" = "--installed" ]; then
+      dpkg -l | grep "^i" | cut -d' ' -f3
+    fi
+    ;;
+  "-h"|"help") help ;;
+  "show")
+    [ -z "$2" ] && error "Missing argument"; exit 1
+    which "nala" >/dev/null && nala show "$2" || apt show "$2" ;;
+  "-S"|"install")
+    shift
+    if [ -n "$1" ]; then
+      for app in "$@"; do
+        if [ "$app" = "--edit" ]; then
+          export EDIT=1
+        else
+          install "$app"
+        fi
+      done
+    else
+      error "Missing argument"; exit 1
+    fi
+    ;;
+esac

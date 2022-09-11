@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# This script is called on startup to remap keys.
+# Increased key speed via rate change
+xset r rate 300 50
+
+# Maps capslock to backspace
+# setxkbmap -option caps:backspace -option shift:both_capslock
+
+# to make it work repeatedly
+# xmodmap -e "clear Lock"
+
+# Map the capslock to super...
+setxkbmap -option caps:super -option shift:both_shiftlock
+# But when it is pressed only once, treat it as escape.
+killall xcape 2>/dev/null ; xcape -e 'Super_L=Escape'
+
+# Map Control_R as mod 5
+xmodmap -e "clear control" -e "add control = Control_L"\
+				-e "clear mod5" -e "add mod5 = Control_R"
+
+# just to make sure Alt_R is on the right keycode
+# xmodmap -e "keycode 108 = Alt_R Meta_R"
+
+# Map Alt_R as mod 3
+xmodmap -e "clear mod1" -e "add mod1 = Alt_L"\
+	      -e "clear mod3" -e "add mod3 = Alt_R"
+
+# Map the menu button to right super
+#xmodmap -e 'keycode 135 = Super_R'
+
+# Turn off the caps lock if on since there is no longer a key for it.
+xset -q | grep "Caps Lock:\s*on" && xdotool key Caps_Lock
+
+# mutter/ubuntu - gsettings

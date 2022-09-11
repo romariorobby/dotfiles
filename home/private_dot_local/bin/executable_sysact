@@ -1,0 +1,36 @@
+#!/bin/sh
+# A dmenu wrapper script for system functions.
+
+# [ -f "$HOME/.aer" ] && . $HOME/.aer
+
+# For non-systemd init systems.
+case "$(readlink -f /sbin/init)" in
+	*systemd*) ctl='systemctl' ;;
+	*) ctl='loginctl' ;;
+esac
+
+wmpid(){ # This function is needed if there are multiple instances of the window manager.
+	tree="$(pstree -ps $$)"
+	tree="${tree#*$WM(}"
+	echo "${tree%%)*}"
+}
+case "$MENU" in
+  "dmenu") cmd="dmenu -i -p" ;;
+  "rofi") cmd="rofi -dmenu -i -p" ;;
+esac
+
+case "$(printf "lock\nleave\nrenew\nhibernate\nreboot\nshutdown\nsleep\ndisplay off\nrefresh dwmblocks\ntoggle theme" | $cmd "Action (Current $WM)")" in
+	'lock') slock ;;
+	'leave')
+          [ "$WM" = "mutter" ] && gnome-session-quit --logout || pkill -TERM "$WM" ;;
+	'renew')
+          [ "$WM" != "mutter" ] && pkill -HUP "$WM" ;;
+	'hibernate') slock $ctl hibernate ;;
+	'sleep') slock $ctl suspend ;;
+	'reboot') $ctl reboot -i ;;
+	'shutdown') $ctl poweroff -i ;;
+	'display off') xset dpms force off ;;
+	'refresh dwmblocks') pkill -SIGUSR1 dwmblocks && notify-send "Reupdating all dwmblocks..." ;;
+	'toggle theme') recolor -t ;;
+	*) exit 1 ;;
+esac

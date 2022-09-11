@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# FIX: When switching to qwerty all my configuration from `remaps` remove?
+# how to save previous state in setxkbmap?
+help(){
+  printf "usage: km <LAYOUT>
+layout:
+  dvorak (-d)
+  workman (-w)
+"
+}
+
+case "$1" in
+  "-d"|"dvorak") kb="dvorak" ;;
+  "-w"|"workman") kb="workman" ;;
+  *) help && exit 1 ;;
+esac
+setxkbmap -layout us,us -variant ,$kb -option "lv3:rwin_switch,grp:alt_space_toggle"
+printf "set layout to $kb. ALT-Space to toggle it\n"

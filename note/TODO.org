@@ -1,0 +1,53 @@
+#+TITLE: TODO
+
+* Programs configurations
+** DONE rofi
+
+** DONE x11
+
+** DONE zsh
+
+** DONE tmux
+
+** DONE git
+
+** DONE lf
+
+** DONE kitty
+
+** TODO alacritty
+
+** TODO neovim
+
+** TODO Doom emacs
+
+** TODO MPV
+still fine tuning the configurations
+
+** TODO qutebrowser
+
+** TODO Vieb
+** TODO gtk{1..4}
+
+** TODO Spicetify
+
+** TODO picom
+** TODO Vscode
+
+** TODO android studio
+- [ ] ideavim
+* Script
+- [X] bukumenu
+- [X] bukunb
+- [X] changer
+- [X] lfub
+- [X] menuhandler
+- [X] menupass
+- [X] setbg
+- [X] shortcuts
+- [X] tmx
+- [X] sysact
+* chezmoiscripts
+** before_setup
+** before_install
+** after_

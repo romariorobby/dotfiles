@@ -4,9 +4,8 @@
     type = "file"
     url = "https://raw.githubusercontent.com/wis/mpvSockets/master/mpvSockets.lua"
     refreshPeriod = "168h"
-# Chemacs
-[".emacs.d"]
+[".local/src/dwmf"]
     type = "git-repo"
-    url = "https://github.com/plexus/chemacs2.git"
+    url = "https://github.com/romariorobby/dwmf.git"
     refreshPeriod = "168h"
 {{- end }}

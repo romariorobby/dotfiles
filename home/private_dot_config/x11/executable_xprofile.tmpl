@@ -2,18 +2,19 @@
 
 [ -f "$HOME/.aer" ] && . $HOME/.aer
 
-sxhkd -c ~/.config/sxhkd/sxhkdrc-$WM &
 case "$WM" in
   "dwm"|"dwmf")
-    autostart="dunst dwmblocks"
-    for program in $autostart; do
-      pidof -s "$program" || "$program" &
-    done >/dev/null 2>&1
+    # dunst &
+    # dmwblocks &
     picom -b &
-    skippy-xd --start-daemon &
+    # skippy-xd --start-daemon &
+    ;;
+  "mutter")
+    sxhkd -c ~/.config/sxhkd/sxhkdrc-$WM &
     ;;
 esac
 #xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Uncomment to use Xresources colors/settings on startup
+# emacs --daemon && emacsclient -c --eval "(org-roam-dailies-find-today)" &
 syncthing serve --no-browser --logfile=default &
 {{- if (eq .chezmoi.osRelease.id "pop") }}
 syncthing-gtk -m &

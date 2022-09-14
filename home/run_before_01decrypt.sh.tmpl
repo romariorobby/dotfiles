@@ -6,7 +6,7 @@ log "Start decrypt.sh"
 
 encryption="{{ .encryption }}"
 
-[ -z "$encryption" ] && { log "Aborting decrypt.sh [ No Encryption ]"; }
+[ -z "$encryption" ] && { err "CM_ENCRYPTION not set. nothing to decrypt"; log "Aborting decrypt.sh [ No Encryption ]"; }
 {{- if (eq .encryption "gpg") }}
 targetdir="{{ joinPath .chezmoi.sourceDir "/private_dot_local/private_share/encrypted" }}"
 

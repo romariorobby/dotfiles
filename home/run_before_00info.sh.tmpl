@@ -1,0 +1,16 @@
+#!/bin/sh
+
+printf "
+===============================
+Operating System = {{ .chezmoi.os }}
+{{- if (eq .chezmoi.os "linux") }}
+Distribution = {{ .chezmoi.osRelease.id }}
+{{- end }}
+Profile = {{ .profile }}
+Encryption = {{ (or .encryption (printf "None")) }}
+Password Manager = {{ (or .passmgr (printf "None")) }}
+===============================
+"
+
+read -p "Are You sure you want to continue? " ans
+[ "$ans" = "${ans#[Yy]*}" ] && exit 1

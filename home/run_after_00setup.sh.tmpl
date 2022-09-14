@@ -1,8 +1,21 @@
 #!/bin/sh
 
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
-# I'm not sure why we need to do there, even though i have cleanup all .bashrc related in $HOME
+echo "Running Pre chezmoi apply script"
+# I'm not sure why we need to do there, even though i've cleanup all .bashrc related in $HOME
+{{- if (eq .chezmoi.os "linux") }}
 grep -q ".config}/bash/.bashrc" /etc/bash.bashrc > /dev/null ||\
   { printf 'if [ -s "${XDG_CONFIG_HOME:-$HOME/.config}/bash/.bashrc" ]; then
   . "${XDG_CONFIG_HOME:-$HOME/.config}/bash/.bashrc"
-fi' | sudo tee -a /etc/bash.bashrc; log "Modify /etc/bash.bashrc"; }
+fi' | sudo tee -a /etc/bash.bashrc; log "Modified /etc/bash.bashrc"; }
+
+{{- end -}}
+
+{{- if (eq .osid "linux-arch") }}
+# Make pacman colorful, concurrent downloads and Pacman eye-candy.
+grep -q "ILoveCandy" /etc/pacman.conf || sudo sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+sudo sed -Ei "s/^#(ParallelDownloads).*/\1 = 5/;/^#Color$/s/#//" /etc/pacman.conf
+
+# Use all cores for compilation.
+sudo sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
+{{- end }}

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
-echo "Running Pre chezmoi apply script"
+log "* start after setup" 
 # I'm not sure why we need to do there, even though i've cleanup all .bashrc related in $HOME
 {{- if (eq .chezmoi.os "linux") }}
 grep -q ".config}/bash/.bashrc" /etc/bash.bashrc > /dev/null ||\

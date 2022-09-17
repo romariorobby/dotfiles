@@ -1,5 +1,8 @@
 #!/bin/sh
 
+. {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
+log "========Starting Chezmoi==========="
+
 printf "
 ===============================
 Operating System = {{ .chezmoi.os }}
@@ -11,6 +14,5 @@ Encryption = {{ (or .encryption (printf "None")) }}
 Password Manager = {{ (or .passmgr (printf "None")) }}
 ===============================
 "
-
-read -p "Are You sure you want to continue? " ans
-[ "$ans" = "${ans#[Yy]*}" ] && exit 1
+nc -zw1 1.1.1.1 443 & _spinner "Checking Internet connection" || die "No Internet Connection"
+read -p "continue with this setting? " ans && [ ${ans:-N} = y ]

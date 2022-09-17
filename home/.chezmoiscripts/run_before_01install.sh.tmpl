@@ -1,26 +1,36 @@
 #!/bin/sh
 
+# TODO: warn if running as root
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
 osid="{{ .osid }}"
 id="{{ .chezmoi.osRelease.id }}"
 profile="{{ .profile }}"
-# Normalize all distro derivates (like manjaro,pop) -> their parent distro
+repodir="$HOME/.local/src"
+passmgr="{{ .passmgr }}"
+log "* Start Installation program"
+
+# Normalize all distro derivates
+# arch derivatives -> linux-arch, ubuntu derivatives -> linux-debian
 case "$id" in
   "pop")
     osid="linux-debian"
     pkgcmd="apt-get install -q -y"
     aur="una install"
     maininstalled=$(dpkg --get-selections | cut -f1)
+	aururl="https://mpr.makedeb.org"
+	paurdir="$repodir/PKGBUILDs/deb"
     # makecmd="makedeb"
     # aurinstalled=$maininstalled
     ;;
-  "arch"|"endeavour"|"manjaro")
+  "arch"|"endeavour"|"manjaro"|"artix")
     osid="linux-arch"
     pkgcmd="pacman -S --noconfirm"
     aur="paru -S --noconfirm"
-    makecmd="makepkg"
+    makecmd="makepkg --noconfirm -si"
     maininstalled=$(pacman -Qq) #?
     aurinstalled=$(pacman -Qqm)
+	aururl="https://aur.archlinux.org"
+	paurdir="$repodir/PKGBUILDs/arch"
     ;;
   *)
     if [ "$osid" = "darwin" ]; then
@@ -28,7 +38,6 @@ case "$id" in
     fi
     ;;
 esac
-
 # progsfile="{{ joinPath .chezmoi.workingTree "/prog" }}/test.csv"
 progsfile="{{ joinPath .chezmoi.workingTree "/prog" }}/$osid.csv"
 
@@ -46,13 +55,15 @@ installpkg(){
 
 maininstall() {
   echo "$maininstalled" | grep -q "^$1$" && { echo "($n/$total) MAIN: $1 already installed"; return 1; }
-  (installpkg "$1" && { suc "($n/$total) MAIN: Installed $1"; log "Installed $1"; } || err "($n/$total) MAIN: can't installed $1") & _spinner "($n/$total) MAIN: Installing $1"
+  # (installpkg "$1" && { suc "($n/$total) MAIN: Installed $1"; log "Installed $1"; } || err "($n/$total) MAIN: can't installed $1") & _spinner "($n/$total) MAIN: Installing $1"
+  installpkg "$1" || { err "($n/$total) MAIN: can't installed $1"; return 1; } & _spinner "($n/$total) MAIN: Installing $1"
+  suc "($n/$total) MAIN: Installed $1"; log "Installed $1";
 }
 
 # TODO: Make it work for debian/ubuntu (see makedeb.org)
 aurinstall(){
-  echo "$aurinstalled" | grep -q "^$1$" && { echo "($n/$total) AUR: $1 already installed"; return 1; }
-  $aur "$1" >/dev/null 2>&1
+	echo "$aurinstalled" | grep -q "^$1$" && { echo "($n/$total) AUR: $1 already installed"; return 1; }
+	( $aur "$1" >/dev/null 2>&1 && { suc "($n/$total) AUR: Installed $1"; log "Installed $1"; } || err "($n/$total) AUR: Can't installed $1" ) & _spinner "($n/$total) AUR: Installing $1"
 }
 
 npminstall(){
@@ -65,11 +76,19 @@ pipinstall(){
   ( yes | pip install "$1" >/dev/null 2>&1 && { suc "($n/$total) PIP: Installed $1"; log "Installed $1"; } || err "($n/$total) PIP: can't installed $1" ) & _spinner "($n/$total) Installing $1"
 }
 
-# TODO:
-#   - list all personal PKGBUILDS
-#   - check if exist
 makepkginstall(){
-  echo "AP: $n $makecmd -si $1"
+  echo "$aurinstalled" | grep -q "^$1$" && { err "AUR: $1 already installed"; return 1; }
+  mkdir -p "$repodir/$1"
+  git -C "$repodir" clone --depth 1 --single-branch --no-tags -q "$aururl/$1.git" "$repodir/$1" >/dev/null 2>&1\
+	  || { cd "$repodir/$1" || return 1; git pull -q --force origin master; }
+  cd "$repodir/$1" || exit 1
+  { $makecmd >/dev/null 2>&1 & _spinner "Installing $1"; } && suc "Installed $1" || { err "Something wrong";  return 1; }
+}
+
+privmakepkginstall(){
+	[ ! -d "$paurdir/$1" ] && { err "($n/$total) Private-AUR: $1 not found in personal PKGBUILDS" ; return 1; }
+	cd "$paurdir/$1" || die "($n/$total) Private-AUR: Error"
+	{ $makecmd >/dev/null 2>&1 & _spinner "Installing $1"; } && suc "($n/$total) Private-AUR: Installed $1" || { err "($n/$total) Private-AUR: Something wrong"; return 1; }
 }
 
 installationloop(){
@@ -82,7 +101,7 @@ installationloop(){
   [ -f "$progsfile" ] && grep -v "^\w\+\?[X]\|,\w\+\?[X]" $progsfile | grep "^\w\+\?[$abb]" > /tmp/progs.csv
   total=$(wc -l < /tmp/progs.csv)
   # Prompt sudo password upfront.
-  # would this have side effect for the rest of the script? are the other command running under sudo ?
+  # would this have side effect for the rest of the script?
   sudo -v
   while IFS="," read -r profile tag program desc; do
     n=$((n + 1))
@@ -91,12 +110,13 @@ installationloop(){
       "A") aurinstall "$program" "$desc" ;;
       "N") npminstall "$program" "$desc" ;;
       "P") pipinstall "$program" "$desc" ;;
-      # "AP") makepkginstall "$program" ;;
+      "AP") privmakepkginstall "$program" ;;
       # "G") gitmakeinstall "$program" ;;
     esac
   done < /tmp/progs.csv
-  echo "Installing $total programs"
+  suc "Installed $total programs"
 }
-log "Start install packages"
 echo "===== $profile installation =====" && sleep 1s
+[ "$osid" = "linux-arch" ] && makepkginstall paru-bin
+[ -z "$passmgr" ] || { installpkg "$passmgr" & _spinner "Installing $passmgr"; }
 installationloop

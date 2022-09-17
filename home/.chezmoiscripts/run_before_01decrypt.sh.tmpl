@@ -2,11 +2,11 @@
 CM_LOG=${CM_LOG:-true}
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
 
-log "Start decrypt.sh"
+log "* Start decrypt.sh"
 
 encryption="{{ .encryption }}"
 
-[ -z "$encryption" ] && { err "CM_ENCRYPTION not set. nothing to decrypt"; log "Aborting decrypt.sh [ No Encryption ]"; }
+[ -z "$encryption" ] && { err "CM_ENCRYPTION not set. nothing to decrypt"; log "WARN: Aborting decrypt.sh [ No Encryption ]"; }
 {{- if (eq .encryption "gpg") }}
 targetdir="{{ joinPath .chezmoi.sourceDir "/private_dot_local/private_share/encrypted" }}"
 
@@ -18,9 +18,9 @@ for file in $files; do
   dir="${file%/*}"
   # base="${file%.*}"
   # Decrypt gpg
+  # loop throuhg asc file and ask passphrase each one of them
   while [ ! -f $dir/out/$realtail ]; do
     inputpass "$tail"
-    echo "Your pass: $pass1"
     mkdir -p "$dir/out"
     (
       gpg --quiet --batch --pinentry-mode loopback --passphrase "$pass1" --output "$dir/out/$realtail" --decrypt "$file" 2>/dev/null && suc "Successfully decrypted [$tail]" || err "Possibly wrong password. Retype password again"
@@ -31,7 +31,8 @@ for file in $files; do
   if contains "$tail" "gnupg"; then
     if [ -d "$HOME/.gnupg" ]; then
       suc "Existing gnupg detected. Backup and removing old gnupg"
-      mv $HOME/.gnupg $HOME/.gnupg-$(date +%y%m%d-T%H%M).bak && rm -rf $HOME/.gnupg
+      # mv $HOME/.gnupg $HOME/.gnupg-$(date +%y%m%d-T%H%M).bak && rm -rf $HOME/.gnupg
+      mv $HOME/.gnupg $HOME/.gnupg-$(date +%y%m%d).bak
     fi
     aunpack --quiet -X $HOME $dir/out/$realtail
     suc "extracting $realtail -> $HOME/.gnupg" || err "ERROR: Extracting failed"

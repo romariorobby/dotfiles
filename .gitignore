@@ -1,2 +1,5 @@
 
 log/script.log
+# Prevent from accidentaly leak my secret :)
+home/private_dot_local/private_share/encrypted/out
+home/private_dot_config/chezmoi

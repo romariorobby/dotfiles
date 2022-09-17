@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
-log "Start setup.sh"
+log "* Start before setup.sh"
 
 passmgr="{{ .passmgr }}"
 ghusername="{{ .git.github.username }}"
@@ -28,11 +28,13 @@ pass_setup(){
       [ -z "$pass1" ] && err "token can't be empty."
       ghtoken="$pass1"
     done
-    [ -d "$PASSWORD_STORE_DIR" ] && mv $PASSWORD_STORE_DIR $PASSWORD_STORE_DIR-$(date +%y%m%d-T%H%M).bak
+    # [ -d "$PASSWORD_STORE_DIR" ] && mv $PASSWORD_STORE_DIR $PASSWORD_STORE_DIR-$(date +%y%m%d-T%H%M).bak
+	[ -d "$PASSWORD_STORE_DIR" ] && mv -f $PASSWORD_STORE_DIR $PASSWORD_STORE_DIR-$(date +%y%m%d).bak
     git clone https://$ghusername:$ghtoken@github.com/$ghusername/$passgitreponame.git $PASSWORD_STORE_DIR 2>/dev/null; status="$?"
     # & _spinner "Cloning pass repo..."
     [ "$status" != 0 ] && { err "Possibly wrong token/username/reponame"; unset ghusername ghtoken passgitreponame; } || suc "Pass setup completed"
   done
+  # TODO: setup browserpass (browser extension for pass)
 }
 
 if [ "$passmgr" = "pass" ]; then

@@ -8,6 +8,8 @@
 {{- $passmgr := default "" (env "CM_PASSMGR") }}
 {{- $profile := default "base" (env "CM_PROFILE") -}}
 {{- $debug := default false (env "CM_DEBUG") }}
+# Just put here temporarly...   valid value = rsa,ed25519(not yet added),
+{{- $sshtype := default "rsa" (env "CM_SSHTYPE") }}
 
 
 # Generalize os variable
@@ -36,8 +38,10 @@
 
 {{- if (or $personal (eq $encryption "gpg") (env "CM_GPG") (env "CM_GPG_RECEPIENT") (eq $passmgr "pass"))  -}}
 {{-   $encryption = "gpg" }}
-{{-   if (eq $github_token "") }}
-{{-     $github_token = promptString "github personal token" $github_token -}}
+{{-   if (eq $passmgr "pass") }}
+{{-     if (eq $github_token "") }}
+{{-       $github_token = promptString "github personal token" $github_token -}}
+{{-     end }}
 {{-   end }}
 encryption = "gpg"
 [gpg]
@@ -51,10 +55,9 @@ symmetric = "true"
 command = "pinentry"
 {{- end }}
 
-{{- if (or (env "CM_DEBUG") $debug) }}
+# Exclude from output or diff chezmoi
 [diff]
 exclude = ["scripts"]
-{{- end }}
 
 [data]
 name = {{ $name | quote }}
@@ -63,6 +66,7 @@ osid = {{ $osid | quote }}
 osidlike = {{ $osidlike | quote }}
 passmgr = {{ $passmgr | quote }}
 encryption = {{ $encryption | quote }}
+sshtype = {{ $sshtype | quote }}
 debug = {{ $debug }}
 
 [data.git]

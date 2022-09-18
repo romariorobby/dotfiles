@@ -4,10 +4,16 @@
 log "* start after setup" 
 # I'm not sure why we need to do there, even though i've cleanup all .bashrc related in $HOME
 {{- if (eq .chezmoi.os "linux") }}
-grep -q ".config}/bash/.bashrc" /etc/bash.bashrc > /dev/null ||\
-  { printf 'if [ -s "${XDG_CONFIG_HOME:-$HOME/.config}/bash/.bashrc" ]; then
-  . "${XDG_CONFIG_HOME:-$HOME/.config}/bash/.bashrc"
-fi' | sudo tee -a /etc/bash.bashrc; log "Modified /etc/bash.bashrc"; }
+if [ -f "/etc/bash.bashrc" ]; then
+	grep -q ".config}/bash/.bashrc" /etc/bash.bashrc > /dev/null ||\
+		{ 
+			cat <<- 'EOF' | sudo tee -a /etc/bash.bashrc; log "Modified /etc/bash.bashrc"
+				if [ -s "${XDG_CONFIG_HOME:-$HOME/.config}/bash/.bashrc" ]; then
+				    . "${XDG_CONFIG_HOME:-$HOME/.config}/bash/.bashrc"
+				fi
+			EOF
+		}
+fi
 
 {{- end -}}
 

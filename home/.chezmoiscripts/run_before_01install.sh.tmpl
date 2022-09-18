@@ -11,6 +11,11 @@ log "* Start Installation program"
 
 # Normalize all distro derivates
 # arch derivatives -> linux-arch, ubuntu derivatives -> linux-debian
+
+# Prompt sudo password upfront.
+# would this have side effect for the rest of the script?
+sudo -v
+
 case "$id" in
   "pop")
     osid="linux-debian"
@@ -19,23 +24,33 @@ case "$id" in
     maininstalled=$(dpkg --get-selections | cut -f1)
 	aururl="https://mpr.makedeb.org"
 	paurdir="$repodir/PKGBUILDs/deb"
+	prepkg="git base-devel zsh"
     # makecmd="makedeb"
     # aurinstalled=$maininstalled
+	{ sudo apt update -y >/dev/null 2>&1 & _spinner "Updating apt..."; } || die "Are you have an internet connection?"
     ;;
   "arch"|"endeavour"|"manjaro"|"artix")
     osid="linux-arch"
     pkgcmd="pacman -S --noconfirm"
     aur="paru -S --noconfirm"
     makecmd="makepkg --noconfirm -si"
-    maininstalled=$(pacman -Qq) #?
+    maininstalled=$(pacman -Qq)
     aurinstalled=$(pacman -Qqm)
 	aururl="https://aur.archlinux.org"
 	paurdir="$repodir/PKGBUILDs/arch"
+	prepkg="git base-devel zsh"
+	{ sudo pacman -Sy --noconfirm >/dev/null 2>&1 & _spinner "Updating pacman..."; } || die "Are you have an internet connection?"
+
+	case "$(readlink -f /sbin/init)" in
+		*systemd*) sudo $pkgcmd archlinux-keyring >/dev/null 2>&1 & _spinner "Refreshing Keyring " ;;
+		*openrc*) echo "openrc" ;;
+	esac
     ;;
   *)
-    if [ "$osid" = "darwin" ]; then
-      pkgcmd="brew install"
-    fi
+	  if [ "$osid" = "darwin" ]; then
+		prepkg="git zsh"
+		pkgcmd="brew install"
+	  fi
     ;;
 esac
 # progsfile="{{ joinPath .chezmoi.workingTree "/prog" }}/test.csv"
@@ -56,24 +71,23 @@ installpkg(){
 maininstall() {
   echo "$maininstalled" | grep -q "^$1$" && { echo "($n/$total) MAIN: $1 already installed"; return 1; }
   # (installpkg "$1" && { suc "($n/$total) MAIN: Installed $1"; log "Installed $1"; } || err "($n/$total) MAIN: can't installed $1") & _spinner "($n/$total) MAIN: Installing $1"
-  installpkg "$1" || { err "($n/$total) MAIN: can't installed $1"; return 1; } & _spinner "($n/$total) MAIN: Installing $1"
-  suc "($n/$total) MAIN: Installed $1"; log "Installed $1";
+  (installpkg "$1" && { suc "($n/$total) MAIN: Installed $1"; log "MAIN: Installed $1"; }  || err "($n/$total) MAIN: can't installed $1" ) & _spinner "($n/$total) MAIN: Installing $1"
 }
 
 # TODO: Make it work for debian/ubuntu (see makedeb.org)
 aurinstall(){
 	echo "$aurinstalled" | grep -q "^$1$" && { echo "($n/$total) AUR: $1 already installed"; return 1; }
-	( $aur "$1" >/dev/null 2>&1 && { suc "($n/$total) AUR: Installed $1"; log "Installed $1"; } || err "($n/$total) AUR: Can't installed $1" ) & _spinner "($n/$total) AUR: Installing $1"
+	( $aur "$1" >/dev/null 2>&1 && { suc "($n/$total) AUR: Installed $1"; log "AUR: Installed $1"; } || err "($n/$total) AUR: Can't installed $1" ) & _spinner "($n/$total) AUR: Installing $1"
 }
 
 npminstall(){
   [ -x "$(command -v "npm")" ] || installpkg npm >/dev/null 2>&1
-  ( yes | npm install "$1" >/dev/null 2>&1 && suc "($n/$total) NPM: Installed $1" || err "NPM: can't installed $1" ) & _spinner "($n/$total) NPM: Installing $1"
+  ( yes | npm install "$1" >/dev/null 2>&1 && { suc "($n/$total) NPM: Installed $1"; log "NPM: Installed $1"; } || err "($n/$total) NPM: can't installed $1" ) & _spinner "($n/$total) NPM: Installing $1"
 }
 
 pipinstall(){
   [ -x "$(command -v "pip")" ] || installpkg python-pip >/dev/null 2>&1 || installpkg python3-pip >/dev/null 2>&1
-  ( yes | pip install "$1" >/dev/null 2>&1 && { suc "($n/$total) PIP: Installed $1"; log "Installed $1"; } || err "($n/$total) PIP: can't installed $1" ) & _spinner "($n/$total) Installing $1"
+  ( yes | pip install "$1" >/dev/null 2>&1 && { suc "($n/$total) PIP: Installed $1"; log "PIP: Installed $1"; } || err "($n/$total) PIP: can't installed $1" ) & _spinner "($n/$total) PIP Installing $1"
 }
 
 makepkginstall(){
@@ -82,13 +96,20 @@ makepkginstall(){
   git -C "$repodir" clone --depth 1 --single-branch --no-tags -q "$aururl/$1.git" "$repodir/$1" >/dev/null 2>&1\
 	  || { cd "$repodir/$1" || return 1; git pull -q --force origin master; }
   cd "$repodir/$1" || exit 1
-  { $makecmd >/dev/null 2>&1 & _spinner "Installing $1"; } && suc "Installed $1" || { err "Something wrong";  return 1; }
+  { $makecmd >/dev/null 2>&1 & _spinner "MAKEPKG: Installing $1"; } && suc "MAKEPKG: Installed $1" || { err "MAKEPKG: Something wrong";  return 1; }
 }
 
 privmakepkginstall(){
 	[ ! -d "$paurdir/$1" ] && { err "($n/$total) Private-AUR: $1 not found in personal PKGBUILDS" ; return 1; }
 	cd "$paurdir/$1" || die "($n/$total) Private-AUR: Error"
 	{ $makecmd >/dev/null 2>&1 & _spinner "Installing $1"; } && suc "($n/$total) Private-AUR: Installed $1" || { err "($n/$total) Private-AUR: Something wrong"; return 1; }
+}
+
+preinstall(){
+	for x in $prepkg; do
+		echo "$maininstalled" | grep -q "^$x$" && return 1
+		installpkg "$x" & _spinner "[DEPS] Installing $x" || err "Can't installed $x"
+	done
 }
 
 installationloop(){
@@ -100,9 +121,6 @@ installationloop(){
   # NOTE: Remove X on PROFILE or TAG if there any and then piped(|) to filter only selected profile
   [ -f "$progsfile" ] && grep -v "^\w\+\?[X]\|,\w\+\?[X]" $progsfile | grep "^\w\+\?[$abb]" > /tmp/progs.csv
   total=$(wc -l < /tmp/progs.csv)
-  # Prompt sudo password upfront.
-  # would this have side effect for the rest of the script?
-  sudo -v
   while IFS="," read -r profile tag program desc; do
     n=$((n + 1))
     case "$tag" in
@@ -117,6 +135,7 @@ installationloop(){
   suc "Installed $total programs"
 }
 echo "===== $profile installation =====" && sleep 1s
+preinstall
 [ "$osid" = "linux-arch" ] && makepkginstall paru-bin
 [ -z "$passmgr" ] || { installpkg "$passmgr" & _spinner "Installing $passmgr"; }
 installationloop

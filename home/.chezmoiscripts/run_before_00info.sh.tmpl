@@ -14,5 +14,5 @@ Encryption = {{ (or .encryption (printf "None")) }}
 Password Manager = {{ (or .passmgr (printf "None")) }}
 ===============================
 "
-nc -zw1 1.1.1.1 443 & _spinner "Checking Internet connection" || die "No Internet Connection"
+# nc -zw1 1.1.1.1 443 & _spinner "Checking Internet connection" || die "No Internet Connection"
 read -p "continue with this setting? " ans && [ ${ans:-N} = y ]

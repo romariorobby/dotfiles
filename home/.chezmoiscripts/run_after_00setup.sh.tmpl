@@ -25,3 +25,18 @@ sudo sed -Ei "s/^#(ParallelDownloads).*/\1 = 5/;/^#Color$/s/#//" /etc/pacman.con
 # Use all cores for compilation.
 sudo sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 {{- end }}
+{{- if (eq .chezmoi.os "linux") }}
+# Profile?
+if [ -d "$HOME/.local/src/dwmf" ]; then
+	sudo pacman --noconfirm -S xorg-xsetroot >/dev/null 2>&1
+	sudo make -C "$HOME/.local/src/dwmf" install | log || err "Can't build dwm"
+fi
+{{- end }}
+
+case "$SHELL" in
+	*bash*)
+		sudo chsh -s /bin/zsh "$USER" >/dev/null 2>&1 & _spinner "Change Default shell to zsh" && suc "You need to relogout to takes effects"
+		log "Change default shell to zsh"
+		;;
+esac
+

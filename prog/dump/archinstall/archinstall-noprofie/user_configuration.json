@@ -1,0 +1,62 @@
+{
+    "audio": "pipewire",
+    "bootloader": "grub-install",
+    "config_version": "2.5.0",
+    "debug": false,
+    "harddrives": [
+        "/dev/sda"
+    ],
+    "hostname": "arch",
+    "mirror-region": {
+        "Australia": {
+            "http://arch.lucassymons.net/$repo/os/$arch": true,
+            "http://archlinux.mirror.digitalpacific.com.au/$repo/os/$arch": true,
+            "http://ftp.iinet.net.au/pub/archlinux/$repo/os/$arch": true,
+            "http://ftp.swin.edu.au/archlinux/$repo/os/$arch": true,
+            "http://mirror.internode.on.net/pub/archlinux/$repo/os/$arch": true,
+            "http://mirrors.wale.id.au/archlinux/$repo/os/$arch": true,
+            "http://syd.mirror.rackspace.com/archlinux/$repo/os/$arch": true,
+            "https://arch.lucassymons.net/$repo/os/$arch": true,
+            "https://archlinux.mirror.digitalpacific.com.au/$repo/os/$arch": true,
+            "https://mirror.aarnet.edu.au/pub/archlinux/$repo/os/$arch": true,
+            "https://mirrors.wale.id.au/archlinux/$repo/os/$arch": true,
+            "https://syd.mirror.rackspace.com/archlinux/$repo/os/$arch": true,
+            "https://sydney.mirror.pkgbuild.com/$repo/os/$arch": true
+        },
+        "Indonesia": {
+            "http://kebo.pens.ac.id/archlinux/$repo/os/$arch": true,
+            "http://mirror.telkomuniversity.ac.id/archlinux/$repo/os/$arch": true,
+            "https://mirror.telkomuniversity.ac.id/archlinux/$repo/os/$arch": true
+        },
+        "Singapore": {
+            "http://mirror.aktkn.sg/archlinux/$repo/os/$arch": true,
+            "http://mirror.guillaumea.fr/archlinux/$repo/os/$arch": true,
+            "http://mirror.jingk.ai/archlinux/$repo/os/$arch": true,
+            "http://mirror.sg.gs/archlinux/$repo/os/$arch": true,
+            "http://ossmirror.mycloud.services/os/linux/archlinux/$repo/os/$arch": true,
+            "https://download.nus.edu.sg/mirror/archlinux/$repo/os/$arch": true,
+            "https://mirror.aktkn.sg/archlinux/$repo/os/$arch": true,
+            "https://mirror.guillaumea.fr/archlinux/$repo/os/$arch": true,
+            "https://mirror.jingk.ai/archlinux/$repo/os/$arch": true,
+            "https://mirror.sg.gs/archlinux/$repo/os/$arch": true
+        }
+    },
+    "mount_point": null,
+    "nic": {
+        "dhcp": true,
+        "dns": null,
+        "gateway": null,
+        "iface": null,
+        "ip": null,
+        "type": "iso"
+    },
+    "packages": [
+        "neovim"
+    ],
+    "plugin": null,
+    "profile": null,
+    "script": "guided",
+    "silent": false,
+    "swap": false,
+    "version": "2.5.0"
+}

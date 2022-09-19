@@ -1,0 +1,48 @@
+{
+    "/dev/sda": {
+        "partitions": [
+            {
+                "ESP": false,
+                "PARTUUID": "D047-E03A",
+                "boot": true,
+                "encrypted": false,
+                "filesystem": {
+                    "format": "vfat"
+                },
+                "mountpoint": "/boot",
+                "size": 1048576,
+                "start": 2048,
+                "type": "primary",
+                "wipe": true
+            },
+            {
+                "ESP": false,
+                "PARTUUID": "",
+                "boot": false,
+                "encrypted": false,
+                "filesystem": {
+                    "format": "ext4"
+                },
+                "mountpoint": "/",
+                "size": 104857600,
+                "start": 1050624,
+                "type": "primary",
+                "wipe": true
+            },
+            {
+                "ESP": false,
+                "PARTUUID": "",
+                "boot": false,
+                "encrypted": false,
+                "filesystem": {
+                    "format": "ext4"
+                },
+                "mountpoint": "/home",
+                "size": 128544768,
+                "start": 105908224,
+                "type": "primary",
+                "wipe": true
+            }
+        ]
+    }
+}

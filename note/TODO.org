@@ -31,8 +31,10 @@
 - [ ] MPV
   WIP
 
-- [ ] gtk{1..4}
+- [-] gtk{1..4}
   WIP
+  - [X] gtk3  (tested on arch)
+
 - [ ] alacritty
 - [ ] Fontconfig
 - [ ] neovim

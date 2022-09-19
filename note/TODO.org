@@ -1,41 +1,50 @@
 #+TITLE: TODO
 
+
+* chezmoiscripts (run_)
+- [X] before_info
+  Printing current chezmoi information. profile, git name,username,etc..
+
+- [X] before_decrypt
+  Decrypting script for gpg
+
+- [X] before_install
+  Installing programs
+
+- [-] before_setup
+  - [X] Setup passmgr
+  - [ ] 
+
+- [-] after_setup [2/3]
+  - [X] <all> add line to /etc/bash.bashrc to source ~/.config/bash/bashrc
+  - [X] <arch> customize pacman and makepkg
+  - [ ] <osx> customize default setting osx
+
 * Programs configurations
-** DONE rofi
+- [X] rofi
+- [X] x11
+- [X] zsh
+- [X] tmux
+- [X] git
+- [X] lf
+- [X] kitty
+- [ ] MPV
+  WIP
 
-** DONE x11
-
-** DONE zsh
-
-** DONE tmux
-
-** DONE git
-
-** DONE lf
-
-** DONE kitty
-
-** TODO alacritty
-
-** TODO neovim
-
-** TODO Doom emacs
-
-** TODO MPV
-still fine tuning the configurations
-
-** TODO qutebrowser
-
-** TODO Vieb
-** TODO gtk{1..4}
-
-** TODO Spicetify
-
-** TODO picom
-** TODO Vscode
-
-** TODO android studio
+- [ ] gtk{1..4}
+  WIP
+- [ ] alacritty
+- [ ] Fontconfig
+- [ ] neovim
+- [ ] Doom emacs
+- [ ] qutebrowser
+- [ ] Vieb
+- [ ] Spicetify
+- [ ] picom
+- [ ] Vscode
+- [ ] android studio
 - [ ] ideavim
+
 * Script
 - [X] bukumenu
 - [X] bukunb
@@ -47,7 +56,9 @@ still fine tuning the configurations
 - [X] shortcuts
 - [X] tmx
 - [X] sysact
-* chezmoiscripts
-** before_setup
-** before_install
-** after_
+
+* IMP
+- [ ] git need to be installed before run chezmoi otherwise you have to rerun
+  sol1: create preinstall script ?
+- [ ] Xorg?
+- [ ] fix xbacklight popOS

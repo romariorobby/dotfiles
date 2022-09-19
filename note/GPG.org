@@ -6,6 +6,8 @@
   gpg --full-gen-key
   #+END_SRC
 
+  - Select entropy 4096
+
 * Export to your private key
   #+BEGIN_SRC shell
   gpg --armor --export-secret-keys <YOUREMAILADDRESS>

@@ -1,0 +1,9 @@
+#+TITLE: Requirement
+
+
+* Requirement
+** Font
+These font required to be installed
+- SF Pro (as sans serif and serif font)
+- JetBrains Mono Nerd Font (as monospace font) or any Monospace with Nerd font patched required.
+

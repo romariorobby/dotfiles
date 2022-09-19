@@ -5,3 +5,19 @@
   - GPG
   - Github token (if you store on private repository on Github)
 
+* Setup
+  #+begin_src bash
+  pass --init <gpg-id/email>
+  #+end_src
+
+  - check gpg-id
+  #+begin_src bash
+  gpg --list-secret-keys --keyid-format LONG
+  #+end_src
+
+  #+begin_example
+  sec   rsa4096/${SEC-ID} ${DATE} [SC] [${SEC-EXPIREDATE]
+  ${SEC-LONG-ID}
+  uid                 [${TRUSTLEVEL}] ${NAME} <${EMAIL}>
+  ssb   rsa4096/${SECSUB-ID} ${DATE} [E] [${SECSUB-EXPIREDATE]
+  #+end_example

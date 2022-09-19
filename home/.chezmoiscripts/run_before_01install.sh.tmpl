@@ -2,6 +2,7 @@
 
 # TODO: warn if running as root
 . {{ joinPath .chezmoi.workingTree "/misc/utils.sh" }}
+# default osid = os otherwise $os-$id
 osid="{{ .osid }}"
 id="{{ .chezmoi.osRelease.id }}"
 profile="{{ .profile }}"
@@ -11,11 +12,12 @@ log "* Start Installation program"
 
 # Normalize all distro derivates
 # arch derivatives -> linux-arch, ubuntu derivatives -> linux-debian
-
+trap force_quit INT
 # Prompt sudo password upfront.
 # would this have side effect for the rest of the script?
 sudo -v
 
+# TODO: Termux android
 case "$id" in
   "pop")
     osid="linux-debian"

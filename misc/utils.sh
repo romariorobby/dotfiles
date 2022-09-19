@@ -67,13 +67,18 @@ read_pass(){
   printf "\n"
 }
 
+force_quit(){
+    log "* User Force quit Installation"
+    exit 1
+}
+
 inputpass(){
-  printf "Enter Password for [$1]: "; read_pass pass1
-  printf "Retype Password for [$1]: "; read_pass pass2
+  printf "%s" "Enter Password for [$1]: "; read_pass pass1
+  printf "%s" "Retype Password for [$1]: "; read_pass pass2
   while ! [ "$pass1" = "$pass2" ]; do
     unset pass2
     err "Password do not match"
-    printf "Enter password again for [$1]: "; read_pass pass1
-    printf "Retype Password again for [$1]: "; read_pass pass2
+    printf "%s" "Enter password again for [$1]: "; read_pass pass1
+    printf "%s" "Retype Password again for [$1]: "; read_pass pass2
   done
 }

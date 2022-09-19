@@ -13,6 +13,7 @@ help:
 	@echo " make remove-target       remove all target"
 	@echo " make remove-target-test  remove all target test"
 	@echo " make backup-gpg    backup gpg and put in automatically in chezmoi directory .local/share/encrypted"
+	@echo " make installpkg    install packages"
 	@echo
 	@echo "Environment Variable:"
 	@echo " CM_PROFILE         <string> select profile [server/headless,base,minimal,full]"
@@ -55,6 +56,9 @@ remove-target:
 
 check:
 	@echo -n "Are you sure wanna continue this? [y/N] " && read ans && [ $${ans:-N} = y ]
+
+installpkg: 
+	@chezmoi apply --source-path home/.chezmoiscripts/run_before_01install.sh.tmpl
 
 backup-gpg:
 	@./misc/backup-gpg.sh

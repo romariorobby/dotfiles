@@ -33,6 +33,9 @@ alias \
 {{- if (eq .chezmoi.osRelease.id "pop") }}
   bat="batcat" \
 {{- end }}
+{{- if (eq .chezmoi.os "darwin") }}
+  tsp="ts" \
+{{- end }}
   xevs='xev |	awk -F"[ )]+" "/^KeyPress/ { a[NR+2] } NR in a { printf \"%-3s %s\n\", \$5, \$8 } "' \
   xevg="xev | grep -A6 KeyPress"\
   v="nvim" \

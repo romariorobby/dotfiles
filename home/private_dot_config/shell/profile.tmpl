@@ -4,23 +4,34 @@ export PATH="$PATH:$(find "$HOME/.local/bin" -type d | paste -sd ':')"
 # Add doom-emacs to $PATH
 [ -d "$HOME/.config/emacs-doom" ] && export PATH="$PATH:$HOME/.config/emacs-doom/bin"
 export EDITOR="nvim"
-export MENU="rofi"
-{{- if (eq .chezmoi.osRelease.id "pop") }}
+{{- if (eq .osid "linux-pop") }}
 export WM="mutter"
 export BROWSER="brave-browser"
 export EBOOK="gnome-books"
 export READER="evince"
 export IMAGE="eog"
 
+# TODO: NPM: put this on ~/.local ?
 export PATH=$PATH:$HOME/node_modules/.bin # Npm
-{{- else if (eq .chezmoi.osRelease.id "arch") }}
+{{- else if (eq .osid "linux-arch") }}
 export WM="dwm"
 export BROWSER="brave"
 export IMAGE="sxiv"
 export READER="zathura"
+{{- else if (eq .osid "darwin") }}
+export BROWSER="Brave Browser"
+# TODO: replace with actually program
+export IMAGE="open"
+export READER="open"
 {{- end }}
-export TERMINAL="kitty"
+{{- if (eq .chezmoi.os "linux") }}
+export MENU="rofi"
 export DISTRO="{{ .chezmoi.osRelease.id }}"
+{{- else }}
+export MENU="fzf"
+{{- end }}
+# OSX: terminal (default term app)
+export TERMINAL="kitty"
 
 # ~/ Clean-up:
 export XDG_CONFIG_HOME="$HOME/.config"

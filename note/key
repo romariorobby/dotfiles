@@ -13,3 +13,15 @@ SUPER = Mod1
 # TERMINAL/MODE
 SUPER = Mod4 + Shift
 - 
+
+
+# Newsboat
+- Space + m: menuhandler
+- Space + b: browser
+- Space + B: lynx
+- Space + {y,c}: copy url
+- Space + q: queue download
+- Space + v: mpv
+- Space + V: queue download yt-dlp video
+- Space + a: mpv (audio)
+- Space + A: queue download yt-dlp audio

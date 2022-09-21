@@ -2,44 +2,35 @@
 
 # Feed this script a link and it will give $MENU
 # some choice programs to use to open it.
-[ -f "$HOME/.aer" ] && . $HOME/.aer
-
 case "$MENU" in
-  "dmenu") cmd="dmenu -i -p"
-    ;;
-  "rofi") cmd="rofi -dmenu -i -p"
-    ;;
-  "fzf") cmd="fzf --prompt"
-    ;;
-  # *) cmd="rofi -dmenu";;
+	"dmenu") cmd="dmenu -i -p" ;;
+	"rofi") cmd="rofi -dmenu -i -p" ;;
+	"fzf") cmd="fzf --prompt" ;;
+	# *) cmd="rofi -dmenu";;
 esac
 case "$IMAGE" in
-  "sxiv") IMAGE="sxiv -a" ;;
+	"sxiv") IMAGE="sxiv -a" ;;
 esac
 if [ "$MENU" = "fzf" ]; then
-  if [ -z "$1" ]; then
-    read -p "Paste URL or file path: " ans
-    [ -z "$ans" ] || feed="$ans"
-  else
-    feed="$1"
-  fi
+	[ -z "$1" ] && printf 'Paste URL or file path: '; read -r ans
+	feed="${1:-$ans}"
 else
-  feed="${1:-$(printf "%s" | $cmd -p 'Paste URL or file path')}"
+	feed="${1:-$(printf "%s" | $cmd -p 'Paste URL or file path')}"
 fi
 [ -z "$feed" ] && exit 1
+
 case "$(printf "Copy URL\\n$IMAGE\\nsetbg\\n$READER\\n$BROWSER\\nlynx\\n$EDITOR\\nmpv\\nmpv loop\\nmpv float\\nqueue download\\nqueue yt-dlp\\nqueue yt-dlp audio" | $cmd "Open it with?")" in
   "copy url") echo "$feed" | xclip -selection clipboard ;;
-  mpv) setsid -f mpv -quiet --force-window=immediate "$feed" >/dev/null 2>&1
-    notify-send -i mpv "Opening MPV" "<i>$feed<i>" ;;
+  mpv) setsid -f mpv -quiet --force-window=immediate "$feed" >/dev/null 2>&1; notify-send -i mpv "Opening MPV" "<i>$feed<i>" ;;
   "mpv loop") setsid -f mpv -quiet --loop "$feed" >/dev/null 2>&1 ;;
-  "mpv float") setsid -f "$TERMINAL" -e mpv --geometry=+0-0 --autofit=30%  --title="mpvfloat" "$feed" >/dev/null 2>&1 ;;
+  "mpv float") setsid -f mpv --geometry=+0-0 --autofit=30% --title="mpvfloat" "$feed" >/dev/null 2>&1 ;;
   "queue yt-dlp") qndl "$feed" >/dev/null 2>&1 ;;
   "queue yt-dlp audio") qndl "$feed" 'yt-dlp --add-metadata -icx -f bestaudio/best' >/dev/null 2>&1 ;;
   "queue download") qndl "$feed" 'curl -LO' >/dev/null 2>&1 ;;
   $READER) curl -sL "$feed" > "/tmp/$(echo "$feed" | sed "s/.*\///;s/%20/ /g")" && $READER "/tmp/$(echo "$feed" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 ;;
   $IMAGE) curl -sL "$feed" > "/tmp/$(echo "$feed" | sed "s/.*\///;s/%20/ /g")" && $IMAGE "/tmp/$(echo "$feed" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 ;;
   $EDITOR) curl -sL "$feed" > "/tmp/$(echo "$feed" | sed "s/.*\///;s/%20/ /g")" && setsid -f "$TERMINAL" -e "$EDITOR" "/tmp/$(echo "$feed" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 ;;
-  setbg) curl -L "$feed" > $XDG_CACHE_HOME/pic ; xwallpaper --zoom $XDG_CACHE_HOME/pic >/dev/null 2>&1 ;;
+  setbg) curl -L "$feed" > "$XDG_CACHE_HOME/pic" ; setbg "$XDG_CACHE_HOME/pic" >/dev/null 2>&1 ;;
   $BROWSER) setsid -f "${BROWSER:-firefox}" "$feed" >/dev/null 2>&1 ;;
   lynx) lynx "$feed" >/dev/null 2>&1 ;;
 esac

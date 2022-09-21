@@ -1,0 +1,4 @@
+#PROFILE,TAG,PROGRAM,DESC
+BMF,M,task-spooler,"unix job scheduler"
+BMF,M,newsboat,"is a terminal RSS client."
+BMF,P,urlscan,"urlscan"

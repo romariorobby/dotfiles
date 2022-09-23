@@ -172,7 +172,7 @@ cmd moveto ${{ "{{" }}
 	for x in $fx; do
 	    eval mv -iv \"$x\" \"$dest\"
 	done &&
-	    notify-send "🚚 File(s) moved." "File(s) moved to $dest."
+	    notify-send -i system-file-manager "File(s) moved." "File(s) moved to $dest."
 {{ "}}" }}
 
 cmd copyto ${{ "{{" }}
@@ -183,7 +183,7 @@ cmd copyto ${{ "{{" }}
 	for x in $fx; do
 	    eval cp -ivr \"$x\" \"$dest\"
 	done &&
-	    notify-send "📋 File(s) copied." "File(s) copies to $dest."
+	    notify-send -i system-file-manager "File(s) copied." "File(s) copies to $dest."
 {{ "}}" }}
 
 cmd copypath ${{ "{{" }}
@@ -198,6 +198,7 @@ cmd copypath ${{ "{{" }}
 
 # unmap 
 map r
+map d
 map gh
 
 # Mapping
@@ -210,6 +211,12 @@ map <c-f> $lf -remote "send $id select '$(fzf)'"
 # map J $lf -remote "send $id cd $(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf)"
 # USE THIS INSTEAD
 map J $lf -remote "send $id cd $(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' -e 's/\${.*\://;s/\-\$HOME/~/;s/$HOME/~/;s/}//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf)"
+{{- if (eq .osid "linux-arch") }}
+# dragon drop and exit
+map d<space> $dragon-drop -x $fx &
+# dragon keep
+map dk $dragon-drop -k $fx &
+{{- end }}
 map . set hidden!
 map <c-r> reload
 

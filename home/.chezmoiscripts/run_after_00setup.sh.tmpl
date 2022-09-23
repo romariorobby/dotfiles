@@ -40,3 +40,21 @@ case "$SHELL" in
 		;;
 esac
 
+# Setup web extension for mpv
+{{- if (eq .chezmoi.os "linux") }}
+if [ -x "$(command -v "open-in-mpv")" ]; then
+	desktop_dir="$HOME/.local/share/applications"
+
+	cat << 'EOF' > $desktop_dir/open-in-mpv.desktop
+[Desktop Entry]
+Name=open-in-mpv
+Exec=open-in-mpv %u
+Type=Application
+Terminal=false
+NoDisplay=true
+MimeType=x-scheme-handler/mpv
+EOF
+	update-desktop-database
+	xdg-mime default open-in-mpv.desktop x-scheme-handler/mpv
+fi
+{{- end }}

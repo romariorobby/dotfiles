@@ -1,32 +1,35 @@
 #!/bin/sh
 
-[ -f "$HOME/.aer" ] && . $HOME/.aer
-
 case "$WM" in
-  "dwm"|"dwmf")
-    # dunst &
-    # dmwblocks &
-    picom -b &
-	/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-    # skippy-xd --start-daemon &
-    ;;
-  "mutter")
-    sxhkd -c ~/.config/sxhkd/sxhkdrc-$WM &
-    ;;
+	"dwm"|"dwmf")
+		# dunst &
+		# dmwblocks &
+		# skippy-xd --start-daemon &
+		picom -b &
+		# Polkit
+		/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+		;;
+	"mutter")
+		sxhkd -c ~/.config/sxhkd/sxhkdrc-$WM &
+		;;
 esac
-#xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Uncomment to use Xresources colors/settings on startup
-# emacs --daemon && emacsclient -c --eval "(org-roam-dailies-find-today)" &
+# xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Uncomment to use Xresources colors/settings on startup
+# emacs --daemon &
+# emacsclient -c --eval "(org-roam-dailies-find-today)" &
+# deadd-notification-center &
+
 syncthing serve --no-browser --logfile=default &
 {{- if (eq .chezmoi.osRelease.id "pop") }}
 syncthing-gtk -m &
 {{- end }}
+
 # For some reason `remaps` not work under popOS? possibly on ubuntu as well
-remaps &
+# remaps &
 setbg &
 autostart="mpd"
 
 for program in $autostart; do
-  pidof -s "$program" || "$program" &
+	pidof -s "$program" || "$program" &
 done >/dev/null 2>&1
 {{- if (not (eq .chezmoi.osRelease.id "pop")) }}
 # Ensure that xrdb has finished running before moving on to start the WM/DE.

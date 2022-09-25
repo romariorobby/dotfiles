@@ -37,7 +37,7 @@ main:
 	@echo "[MAIN] installing chezmoi destination dir to \`$$HOME\`"
 	@export PASSWORD_STORE_DIR="$(CM_PASSDIR)"  && \
 		echo "Set PASSWORD_STORE_DIR => \`${PASSWORD_STORE_DIR}\`" && sleep 2 && \
-		chezmoi init --apply --refresh-externals --force $$@
+		chezmoi init --apply --refresh-externals --force
 
 test:
 	@echo "[DEBUG] installing chezmoi destination dir to \`${TMPDIR}\`"
@@ -45,7 +45,7 @@ test:
 	@mkdir -pv ${TMPDIR}
 	@export PASSWORD_STORE_DIR="$$HOME/.local/share/password-store" && \
 		echo "Set PASSWORD_STORE_DIR => \`${PASSWORD_STORE_DIR}\`" && sleep 2 && \
-		CM_DEBUG=1 chezmoi -D ${TMPDIR} init --apply --refresh-externals --verbose --force $$@
+		CM_DEBUG=1 chezmoi -D ${TMPDIR} init --apply --refresh-externals --verbose --force
 
 remove-target-test:
 	@rm -rfv $(shell chezmoi managed | sed 's,\(^.\),/tmp/home/\1,g')
@@ -59,6 +59,9 @@ check:
 
 installpkg: 
 	@chezmoi apply --source-path home/.chezmoiscripts/run_before_01install.sh.tmpl
+
+mario:
+	@echo $$@
 
 backup-gpg:
 	@./misc/backup-gpg.sh

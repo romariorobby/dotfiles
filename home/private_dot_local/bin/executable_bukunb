@@ -5,8 +5,8 @@ title="$2"
 # description="$3"
 # feed_title="$4"
 
-printf "Title: ${title}\nURL: ${url}\n"
-read -p "Enter some tags comma seperated: " tags
+printf "Title: %s\nURL: %s\n" "${title}" "${url}"
+printf "Enter some tags comma seperated: "; read -r tags
 
 if [ ! "$tags" ]; then
   tags="newsboat"

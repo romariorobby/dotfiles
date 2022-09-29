@@ -57,4 +57,8 @@ EOF
 	update-desktop-database
 	xdg-mime default open-in-mpv.desktop x-scheme-handler/mpv
 fi
+# TLDR
+if [ -x "$(command -v "tldr")" ]; then
+	tldr --print-completion zsh | tee $HOME/.config/zsh/completions/_tldr
+fi
 {{- end }}

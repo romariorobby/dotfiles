@@ -1,73 +1,79 @@
 #!/bin/sh
 
+# Simple Wrapper for tmux
+# Require: fzf
+
+fzfcmd="fzf --border --layout=reverse --cycle"
 is_running=$(pidof tmux)
 
 sessionizer(){
-  chezdir="$HOME/.local/share/chezmoi"
-  projectdir="$(find $HOME/repos -mindepth 1 -maxdepth 1 -type d)"
-  configdir="$(find $HOME/.config -mindepth 1 -maxdepth 1 -type d)"
-  notesdir="$(find $HOME/Sync/media/document/notes -mindepth 1 -maxdepth 1 -type d)"
-  if [ -n "$2" ]; then
-    selected=$2
-  else
-    selected=$(printf "$configdir\\n$projectdir\\n$chezdir\\n$notesdir" | fzf --prompt "Sessionizer: ")
-  fi
+	[ -d "$HOME/.local/share/chezmoi" ] && chezdir="$HOME/.local/share/chezmoi"
+	[ -d "$HOME/repos" ] && projectdir="$(find "$HOME/repos" -mindepth 1 -maxdepth 1 -type d)"
+	[ -d "$HOME/.local/src" ] && csrcdir="$(find "$HOME/.local/src" -mindepth 1 -maxdepth 1 -type d)"
+	configdir="$(find "$HOME/.config" -mindepth 1 -maxdepth 1 -type d)"
+	notesdir="$(find "$HOME/Sync/media/document/notes" -mindepth 1 -maxdepth 1 -type d)"
+	session="$(tmux list-session -F "#S")"
 
-  if [ -z $selected ]; then
-    exit 0
-  fi
+	selected=$(printf "$session\\n$configdir\\n$projectdir\\n$chezdir\\n$notesdir\\n$csrcdir" | sed "/^[[:space:]]*$/d" | $fzfcmd --prompt "Sessionizer: ")
+	[ -z "$selected" ] && exit 1
 
-  selected_name=$(basename "$selected" | tr . _)
+	selected_name=$(basename "$selected" | tr . _)
 
-  if [ -z "$TMUX" ] && [ -z "$is_running" ]; then
-    tmux new-session -s $selected_name -c $selected
-    exit 0
-  fi
+	if [ -z "$TMUX" ] && [ -z "$is_running" ]; then
+		tmux new-session -s "$selected_name" -c "$selected"
+		exit 0
+	fi
 
-  if ! tmux has-session -t=$selected_name 2> /dev/null; then
-    tmux new-session -ds $selected_name -c $selected
-  fi
-
-  tmux switch-client -t $selected_name
+	if ! tmux has-session -t="$selected_name" 2> /dev/null; then
+		tmux new-session -ds "$selected_name" -c "$selected"
+	fi
+	[ -z "$TMUX" ] && { tmux attach-session -t "$selected_name"; exit; }
+	tmux switch-client -t "$selected_name"
 }
 
-usage() { echo "Usage:
-	tmx [OPTIONS]
-Options:
-	-a: attach session
-	-s: sessionizer
-	-l: list-session
-        -S: terminal sharing [tmate]
-	-h: help
-	" && exit 1;}
+new(){
+	[ -z "$1" ] && { printf "%s" "Session Name: "; read -r name; } || name="$1"
+	if ! tmux has-session -t="$name" 2>/dev/null; then
+		tmux new-session -ds "$name"
+	fi
+	[ -z "$TMUX" ] && { tmux attach-session -t "$name"; exit; } 
+	tmux switch-client -t "$name"
+}
 
-while getopts ":alsSnxh" o; do
-  case "${o}" in
-    a)
-      [ -z "$TMUX" ] || { echo "You already in tmux session"; exit 1; }
-      if [ -z "$2" ]; then 
-        # echo "No target session. -a <target>"
-        sel="$(tmux list-session | fzf | cut -d: -f1)"
-        # [ -n "$is_running" ] && { printf "Active Session: <target>: <wname> <created>\n"; tmux ls;}
-        # exit 1
-      fi
-      [ -z "$sel" ] && exit
-      # OPTARG="$sel"
-      tmux attach-session -t "$sel"
-      ;;
-    l) tmux ls; exit 1 ;;
-    s) sessionizer "$@" ;;
-    S) tmate ;;
-    n) tmux new -A -t "$2";;
-    x)
-      sel="$(tmux list-session | fzf)"
-      sel=$(cut -d: -f1 $sel)
-      tmux attach-session -t "$sel" ;;
-    # k|x) tmux kill-session -t ${OPTARG} ;;
-    # p) sessionizer "${OPTARG}" ;;
-    h) usage ;;
-    # ?) [ -z "$TMUX" ] && tmux ;;
-    *) printf "Invalid $OPTARG\n" && usage ;;
-  esac
-done
-([ -z "$*" ] && [ -z "$TMUX" ]) && tmux || echo "You already in tmux session"
+attach(){
+	session="$(tmux list-session -F "#S")"
+	[ -n "$session" ] && sel="$(echo "$session" | $fzfcmd --select-1 --prompt "Active Session:")"
+	[ -z "$sel" ] && exit 1
+	[ -z "$TMUX" ] && { tmux attach-session -t "$sel"; exit; }
+	tmux switch-client -t "$sel"
+}
+
+kill(){
+	# TODO: how to get current tmux session from shell.
+	#  - Don't kill if current tmux attached
+	session="$(tmux list-session -F "#S")"
+	[ -n "$session" ] && sel="$(echo "$session" | $fzfcmd -m --prompt "Kill Active Session:")"
+	[ -z "$sel" ] && exit 1
+	for session in $sel; do
+		tmux kill-session -t "$session"
+		printf "%s\n" "Removed $session"
+	done
+}
+usage() { 
+	printf "%s\n" "usage: tmx [OPTIONS]
+Options:
+	-a|--attach <name>
+	-s|--sessionizer
+	ls|--list
+	-{x,k}|--kill <name>
+	-h: help" && exit 1;}
+
+
+case "$1" in
+	"--attach"|"-a") attach ;;
+	"--sessionizer"|"-s") sessionizer ;;
+	"-l"|"ls"|"--list") tmux ls ;;
+	"-n"|"--new") shift; new "$1" ;;
+	"-k"|"-x"|"--kill") kill ;;
+	*) usage ;;
+esac

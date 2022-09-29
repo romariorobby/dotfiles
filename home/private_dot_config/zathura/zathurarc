@@ -1,0 +1,20 @@
+set sandbox none
+set selection-clipboard clipboard
+set page-padding 1
+set statusbar-h-padding 0
+set statusbar-v-padding 0
+
+map r reload
+map R rotate
+map p print
+map D toggle_page_mode
+map i recolor
+map u scroll half-up
+map d scroll half-down
+map = zoom in
+map + zoom original
+map 0 zoom original
+map ` mark_evaluate
+
+# Open external Apps
+map <A-e> feedkeys ":exec libreoffice '$FILE'<Return>"

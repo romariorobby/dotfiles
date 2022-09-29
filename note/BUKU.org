@@ -1,0 +1,16 @@
+#+title: Buku
+
+
+* Symlink
+  Setup bookmarks.db to actual directory
+#+begin_src bash
+ln -s $DIR/bookmarks.db ~/.local/share/buku/bookmarks.db
+#+end_src
+
+* Setup Browser Extension for Buku
+** Client
+  #+begin_src bash
+  bukubrow --install-brave # or any browser you used
+  #+end_src
+** Browser Extension
+   <link>

@@ -57,6 +57,11 @@ EOF
 	update-desktop-database
 	xdg-mime default open-in-mpv.desktop x-scheme-handler/mpv
 fi
+
+# Browse extension for buku
+if [ -x "$(command -v "bukubrow")" ]; then
+	bukubrow --install-brave
+fi
 # TLDR
 if [ -x "$(command -v "tldr")" ]; then
 	tldr --print-completion zsh | tee $HOME/.config/zsh/completions/_tldr

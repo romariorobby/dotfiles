@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# This is bound to MODKEY+PrintScreen by default, requires maim, xclip. It lets you
+# choose the kind of screenshot to take, including copying the image or even
+# highlighting an area to copy. scrotcucks on suicidewatch right now.
+
+
+dest="$HOME/Pictures/screenshoot"
+[ ! -d "$dest" ] && mkdir -p "$dest"
+
+[ -n "$1" ] && [ -d "$1" ] && dest="$1"
+
+out="$(date "+%d-%m-%y-%H_%M".png)"
+picfull="$dest/full-$out"
+picselect="$dest/selected-$out"
+picwindow="$dest/window-$out"
+xclip_cmd="xclip -sel clipboard -t image/png"
+
+case "$MENU" in
+	"dmenu") cmd="dmenu -l 6 -i -p" ;;
+	"rofi") cmd="rofi -dmenu -i -p" ;;
+	"fzf") cmd="fzf -i --cycle --prompt";;
+esac
+	
+case "$(printf "a selected area\\ncurrent window\\nfull screen\\na selected area (copy)\\ncurrent window (copy)\\nfull screen (copy)" | $cmd "Screenshot which area? ")" in
+	"a selected area") maim -s "$picselect" && notify-send -i "$picselect" "Screenshot (area) saved" "$picselect" ;;
+	"current window") maim -q -d 0.2 -i "$(xdotool getactivewindow)" "$picwindow" && notify-send -i "$picwindow" "Screenshot (Window) saved" "$picwindow" ;;
+	"full screen") maim -q -d 0.2 "$picfull" && notify-send -i "$picfull" "Screenshot (Full) saved" "$picfull";;
+	"a selected area (copy)") maim -s | xclip -selection clipboard -t image/png && notify-send -i applets-screenshooter "Screenshot (Area)" "copied to clipboard" ;;
+	"current window (copy)") maim -q -d 0.2 -i "$(xdotool getactivewindow)" | ${xclip_cmd} && notify-send -i applets-screenshooter "Screenshot (Window)" "copied to clipboard";;
+	"full screen (copy)") maim -q -d 0.2 | $xclip_cmd && notify-send -i applets-screenshooter "Screenshot (Full)" "copied to clipboard";;
+esac

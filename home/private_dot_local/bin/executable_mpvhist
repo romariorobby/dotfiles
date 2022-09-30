@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "$MENU" in
+	"dmenu") cmd="dmenu -i -l 20 -p" ;;
+	"rofi") cmd="rofi -dmenu -i -p";;
+	"fzf") cmd="fzf --border --cycle --layout=reverse -i --prompt";;
+	*) exit 1 ;;
+esac
+
+histfile="$HOME/.cache/mpvhistory"
+
+# path=$(cat "$histfile" | grep "^$(cat "$histfile" | sed 's/\t.*//g' | $cmd "Select History" | awk '{print $1}')\s" | sed 's/.*\t//')
+path=$(grep "^$(sed 's/\t.*//g' "$histfile" | $cmd "Select History" | awk '{print $1}')\s" "$histfile" | sed 's/.*\t//')
+[ -z "$path" ] && exit 1
+
+[ "$1" != "-p" ] && setsid -f mpv "$path" >/dev/null 2>&1 || printf "%s" "$path"

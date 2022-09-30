@@ -1,73 +1,86 @@
 #!/bin/sh
 
-# [ -f "$HOME/.aer" ] && . $HOME/.aer
-
 case "$MENU" in
-  "dmenu") cmd="dmenu -i -p" ;;
-  "rofi") cmd="rofi -dmenu -i -p" ;;
-  "fzf") cmd="fzf --height=30% --border -1 --layout=reverse --cycle --prompt" ;;
-  *) cmd="rofi -dmenu" ;;
+	"dmenu") cmd="dmenu -i -p" ;;
+	"rofi") cmd="rofi -dmenu -i -p" ;;
+	"fzf") cmd="fzf --height=30% --border -1 --layout=reverse --cycle --prompt" ;;
 esac
 
-envc="WM\\nEDITOR\\nREADER\\nIMAGE\\nTERMINAL\\nBROWSER\\nMENU"
-menuc="dmenu\\nrofi\\nfzf"
-wmc="awesome\\ndwm\\ndwmf\\nqtile\\nmutter"
-editc="nvim\\nemacs\\nvim\\ncode"
-readc="zathura\\nevince"
-imgc="sxiv\\neog\\nnsxiv"
-termc="kitty\\nst\\nalacritty"
-wwwc="brave\\nfirefox\\nlibrewolf\\nchrome\\nqutebrowser"
+envc="WM\nEDITOR\nREADER\nIMAGE\nTERMINAL\nBROWSER\nMENU"
+menuc="dmenu\nrofi\nfzf"
+wmc="awesome\ndwm\ndwmf\nqtile\nmutter\nkwin"
+editc="nvim\nemacs\nvim\ncode"
+readc="zathura\nevince"
+imgc="sxiv\neog\nsxiv"
+termc="kitty\nst\nalacritty"
+wwwc="brave\nfirefox\nlibrewolf\nchrome\nqutebrowser"
 
 choose(){
-  sel="$(printf "$1" | $cmd "Choose $2 (current \"$3\")")"
-  [ -z "$sel" ] || [ "$sel" = "$3" ] && exit 1
-  export sel
+	sel="$(printf "$1" | $cmd "Choose $2 (current \"$temp\" -> \"$3\")")"
+	[ -z "$sel" ] || [ "$sel" = "$3" ] && exit 1
+	export sel
 }
+
 change(){
-  sed -i "s/export $1=.*/export $1=\"$2\"/" $HOME/.zprofile
-  sed -i "s/export $1=.*/export $1=\"$2\"/" $HOME/.aer
+	sed -i "s/export $1=.*/export $1=\"$2\"/" $HOME/.zprofile
+	sed -i "s/export $1=.*/export $1=\"$2\"/" $HOME/.aer
 }
 
 notify(){
-  notify-send "Changer" "Changing <b>$1</b> from <b>$2</b> to <b>$sel</b>"
+	notify-send "Changer" "Changing <b>$1</b> from <b>$2</b> to <b>$sel</b>"
 }
+
 case "$(printf "$envc" | $cmd "What to change ")" in
-  "WM")
-    choose "$wmc" "WM" "$WM"
-    change "WM" "$sel"
-    notify "WM" "$WM"
-    ;;
-  "EDITOR")
-    choose "$editc" "EDITOR" "$EDITOR"
-    change "EDITOR" "$sel"
-    notify "EDITOR" "$EDITOR"
-    ;;
-  "READER")
-    choose "$readc" "READER" "$READER"
-    change "READER" "$sel"
-    notify "READER" "$READER"
-    ;;
-  "IMAGE")
-    choose "$imgc" "IMAGE" "$IMAGE"
-    change "IMAGE" "$sel"
-    notify "IMAGE" "$IMAGE"
-    ;;
-  "TERMINAL")
-    choose "$termc" "TERMINAL" "$TERMINAL"
-    change "TERMINAL" "$sel"
-    notify "TERMINAL" "$TERMINAL"
-    ;;
-  "BROWSER")
-    choose "$wwwc" "BROWSER" "$BROWSER"
-    change "BROWSER" "$sel"
-    notify "BROWSER" "$BROWSER"
-    ;;
-  "MENU")
-    choose "$menuc" "MENU" "$MENU"
-    change "MENU" "$sel"
-    notify "MENU" "$MENU"
-    ;;
-  *) exit 1 ;;
+	"WM")
+		temp="$WM"
+		. $HOME/.zprofile
+		choose "$wmc" "WM" "$WM"
+		change "WM" "$sel"
+		notify "WM" "$WM"
+		;;
+	"EDITOR")
+		temp="$EDITOR"
+		. $HOME/.zprofile
+		choose "$editc" "EDITOR" "$EDITOR"
+		change "EDITOR" "$sel"
+		notify "EDITOR" "$EDITOR"
+		;;
+	"READER")
+		temp="$READER"
+		. $HOME/.zprofile
+		choose "$readc" "READER" "$READER"
+		change "READER" "$sel"
+		notify "READER" "$READER"
+		;;
+	"IMAGE")
+		temp="$IMAGE"
+		. $HOME/.zprofile
+		choose "$imgc" "IMAGE" "$IMAGE"
+		change "IMAGE" "$sel"
+		notify "IMAGE" "$IMAGE"
+		;;
+	"TERMINAL")
+		temp="$TERMINAL"
+		. $HOME/.zprofile
+		choose "$termc" "TERMINAL" "$TERMINAL"
+		change "TERMINAL" "$sel"
+		notify "TERMINAL" "$TERMINAL"
+		;;
+	"BROWSER")
+		temp="$BROWSER"
+		. $HOME/.zprofile
+		choose "$wwwc" "BROWSER" "$BROWSER"
+		change "BROWSER" "$sel"
+		notify "BROWSER" "$BROWSER"
+		;;
+	"MENU")
+		temp="$MENU"
+		. $HOME/.zprofile
+		choose "$menuc" "MENU" "$MENU"
+		change "MENU" "$sel"
+		notify "MENU" "$MENU"
+		;;
+	*) exit 1 ;;
 esac
 
 notify-send -t 10000 -u critical "Changer" "Please re-logout your desktop\nto take effect your changes"

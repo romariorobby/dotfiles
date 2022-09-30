@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # This script does the following:
-#	Run by itself, set the wallpaper (at X start) or mutter os gsettings.
+#	Run by itself, set the wallpaper (at X start) or mutter os uses gsettings.
 #	If given a file, set that as the new wallpaper.
 #	If given a directory, choose random file in it.
 
 # Location of link to wallpaper link.
-bgloc="${XDG_DATA_HOME:-$HOME/.local/share/}/bg"
+bgloc="${XDG_DATA_HOME:-$HOME/.local/share}/bg"
 
 trueloc="$(readlink -f "$1")" &&
 case "$(file --mime-type -b "$trueloc")" in

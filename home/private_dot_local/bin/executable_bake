@@ -1,0 +1,60 @@
+#!/bin/sh
+OUTDIR="$HOME/.local/share/encrypted"
+
+backupGPG(){
+  case "$1" in
+    "full")
+      outfilename="gnupg-$(date +%y%m%d-T%H%M).tar.gz"
+      [ ! -d "$HOME/.gnupg" ] && { echo "No .gnupg directory found. nothing to backup"; exit 1; }
+      tar czvf $OUTDIR/$outfilename -C $HOME .gnupg && \
+        gpg --armor --symmetric $OUTDIR/$outfilename && \
+        echo "Backup Done and Encrypted to $OUTDIR/$outfilename.asc"
+        # Remove .tar.gz
+        rm -f $OUTDIR/$outfilename
+        ;;
+    "secret-keys")
+      gpg --armor --export-secret-keys | gpg --armor --symmetric --output $OUTDIR/gnupg-sec-$(date +%y%m%d-T%H%M).asc
+      ;;
+esac
+
+}
+
+# expected extension to be asc format and the archive need to be at root .gnupg
+restoreGPG(){
+  file=$(readlink -f "$1")
+  tail=$(basename "$file")
+  tailext="${tail%.*}"
+  dir="${file%/*}"
+  ext="${file##*.}"
+  base="${file%.*}"
+  [ ! -f $file ] || [ -z "$file" ] && { echo "File not found or invalid"; exit 1; }
+  [ "$ext" != "asc" ] && { echo ".asc file expected"; exit 1; }
+  while [ ! -f "$HOME/$tailext" ]; do
+    gpg --output $HOME/$tailext --decrypt "$file" || { echo "Wrong Password"; sleep 2s; }
+  done
+  echo "$file -> $HOME/$tailext"
+  [ -d "$HOME/.gnupg" ] && printf "Are you sure you want to overwrite $HOME/.gnupg ? "; read ans
+  [ "$ans" = "${ans#[Yy]*}" ] && { echo "Aborted..."; exit 1; }
+  tar -xzvf $HOME/$tailext && rm -f $HOME/$tailext
+}
+
+help(){
+	printf "%s\n" "usage: bake ${1:-<PROGRAM>} <COMMAND>
+program:
+  gpg           gnupg
+    restore     restore gpg
+    backup      backup gpg
+
+  help          help"
+}
+
+case "$1" in
+  "gpg")
+    case "$2" in
+      "backup"| "-b") backupGPG "$3" ;;
+      "restore"| "-r") restoreGPG "$3" ;;
+      *) help "gpg" ;;
+    esac
+    ;;
+    *) help ;;
+esac

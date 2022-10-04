@@ -1,0 +1,146 @@
+# vim: set ft=sxhkdrc
+###
+# Common Keymaps
+###
+
+# Reload sxhkd
+super + Escape; Escape
+	pkill -USR1 -x sxhkd && notify-send "Hot-restart SXHKD"
+
+# {Close,Close all} notification
+control + {_,shift} + BackSpace
+	dunstctl {close,close-all}
+
+# Show Notification history
+control + grave
+	dunstctl history-pop
+
+# Notification Context
+control + shift + period
+	dunstctl context
+
+# Toggle notification
+super + t ; n
+	notiftog
+
+# Help Key
+# super + F1
+#   helpkey
+
+# Help
+super + shift + F1
+	groff -mom $HOME/.local/share/aer.mom -Tpdf | zathura -
+
+# Reload sxhkd
+super + Escape; Escape
+	pkill -USR1 -x sxhkd && notify-send "Hot-restart SXHKD"
+
+# Required Notmuch installed (mutt-wizard)
+# Sync neomutt
+super + Escape; e
+	mw -Y
+
+# Toggle Notification center
+#super + backslash 
+#  kill -s USR1 $(pidof deadd-notification-center)
+
+# Help
+super + shift + F1
+	groff -mom $HOME/.local/share/aer.mom -Tpdf | zathura -
+  
+# Changer
+super + Escape; c
+	changer
+
+## Launching Application 
+
+# Launch Terminal
+super + Return
+	$TERMINAL
+
+# Launch Emacs
+super + o; e
+	emacs
+
+# Launch Dmenu
+super + shift + Return
+	[ "$MENU" = "dmenu" ] && dmenu_run || rofi -combi-modi window,drun -show combi -show-icons
+
+# Launch BROWSER
+super + a; B
+	$BROWSER
+
+# Launch bukumenu
+super + a; b
+	bukumenu
+
+# Launch {ncmpcpp,newsboat}
+super + a; {m,n}
+	$TERMINAL -e {ncmpcpp,newsboat
+
+# Neomutt
+super + a; e
+	$TERMINAL -e neomutt; pkill -RTMIN+5 dwmblocks
+
+# Launch Maim (screeshoot)
+super + Print
+	maimpick
+
+super + p; {s,b,m}; {t,p,P,s,space}
+	playerctl -p '{spotify,chromium,mpc}' {play-pause,play,pause,stop,play-pause}
+
+super + p; {s,b}; {comma,period}
+	playerctl -p {'spotify','mpc'} {previous,next}
+
+super + p; {s,b}; bracket{left,right}
+	playerctl --player '{spotify,chromium}' position 10{-,+}
+  
+# Launch menumount
+super + F11
+	menumount
+
+# Launch menuumount
+super + shift + F11
+	menuumount
+
+## Multimedia
+# T440P [[
+
+# F1/F4: Toggle Volume/Mic
+XF86Audio{_,Mic}Mute
+	pamixer {_,--default-source} -t; pkill -RTMIN+4 dwmblocks
+
+# F2/F3: Inc/Dec System Volume
+XF86Audio{Raise,Lower}Volume {+ shift,_}
+	pamixer -{i,d}{5,1}; pkill -RTMIN+4 dwmblocks
+
+# F2/F3: Inc/Dec volume via playerctl
+super + XF86Audio{Raise,Lower}Volume
+	playerctl volume 0.1{+,-}; pkill -RTMIN+13 dwmblocks
+
+## Intel Only?
+
+# F5/F6: Inc/Dec Monitor Brightness
+XF86MonBrightness{Up,Down} {+ shift,_}
+	xbacklight -{inc,dec} {5,1}; pkill -RTMIN+2 dwmblocks
+
+# F8: Open nmtui
+XF86WLAN 
+	case "$TERMINAL" in; \
+		"kitty") kitty --name "nmtuifloat" --class "nmtuifloat" -e nmtui ;; \
+		"st") st -n nmtuifloat -c nmtuifloat -e nmtui;; \
+	esac
+
+# F10: Launch $MENU
+XF86Search 
+	[ "$MENU" = "dmenu" ] && dmenu_run || rofi -combi-modi window,drun -show combi -show-icons
+
+# F11: Launch skippy-xd
+XF86LaunchA 
+	skippy-xd --toggle-window-picker
+
+# F12: Launch $BROWSER
+XF86Explorer 
+	$BROWSER
+
+## ]]

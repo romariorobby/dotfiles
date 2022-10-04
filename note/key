@@ -25,3 +25,16 @@ SUPER = Mod4 + Shift
 - Space + V: queue download yt-dlp video
 - Space + a: mpv (audio)
 - Space + A: queue download yt-dlp audio
+
+# Tmux
+Prefix = M-Space (Alt-Space)
+- Prefix + {h,j,k,l} : pane{left,bottom,up,right}
+- Prefix + q : kill-pane (prompting)
+- Prefix + c : kill-pane
+- Prefix + {Alt-m,z} : Maximize/zoom pane
+- Prefix + {comma,period,minus,equal} : resize pane {left,right,down,up}
+- Prefix + {bracketleft,bracketright} : next window {previous,next}
+- Prefix + {braceleft,braceright} : switch client {previous,next}
+- Prefix + y : copy-mode
+- Prefix + p : paste
+- ....

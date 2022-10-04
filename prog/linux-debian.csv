@@ -1,5 +1,5 @@
 #PROFILE,TAG,PROGRAM,DESC
-BM,APX,pamixer,"pulseaudio cli"
+BM,APX,pamixer,"is a command-line audio interface."
 BMF,M,zsh,"Z Shell"
 BSMF,M,task-spooler,"unix job scheduler"
 F,APX,anytype,"Wiki/note-taking built on IPFS technology"

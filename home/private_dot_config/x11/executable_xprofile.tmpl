@@ -1,12 +1,13 @@
 #!/bin/sh
 
 case "$WM" in
+	# kwin, hyprland
 	"dwm"|"dwmf")
 		# dunst &
 		# dmwblocks &
 		# skippy-xd --start-daemon &
 		picom -b &
-		# Polkit
+		# Polkit-gnome
 		/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 		;;
 	"mutter")
@@ -15,11 +16,11 @@ case "$WM" in
 esac
 # xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources & xrdbpid=$!	# Uncomment to use Xresources colors/settings on startup
 # emacs --daemon &
-# emacsclient -c --eval "(org-roam-dailies-find-today)" &
+# emacsclient -c --eval "(org-roam-dailies-find-today)" & # Launch org-roam-dailies
 # deadd-notification-center &
 
 syncthing serve --no-browser --logfile=default &
-{{- if (eq .chezmoi.osRelease.id "pop") }}
+{{- if (eq .osid "linux-pop") }}
 syncthing-gtk -m &
 {{- end }}
 
@@ -31,7 +32,7 @@ autostart="mpd"
 for program in $autostart; do
 	pidof -s "$program" || "$program" &
 done >/dev/null 2>&1
-{{- if (not (eq .chezmoi.osRelease.id "pop")) }}
+{{- if (not (eq .osid "linux-pop")) }}
 # Ensure that xrdb has finished running before moving on to start the WM/DE.
 [ -n "$xrdbpid" ] && wait "$xrdbpid"
 {{- end }}

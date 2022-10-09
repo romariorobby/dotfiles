@@ -12,9 +12,10 @@ sessionizer(){
 	[ -d "$HOME/.local/src" ] && csrcdir="$(find "$HOME/.local/src" -mindepth 1 -maxdepth 1 -type d)"
 	configdir="$(find "$HOME/.config" -mindepth 1 -maxdepth 1 -type d)"
 	notesdir="$(find "$HOME/Sync/media/document/notes" -mindepth 1 -maxdepth 1 -type d)"
-	session="$(tmux list-session -F "#S")"
+	session="$(tmux list-session -F "#S" 2>/dev/null)"
+	# mountdrive=$(lsblk -nrpo "name,type,size,mountpoint,label" | awk -F':' '{gsub(/ /,":")}$4!~/\/boot|\/efi|\/home$|SWAP/&&length($4)>1{printf "%s\n",$4}')
 
-	selected=$(printf "$session\\n$configdir\\n$projectdir\\n$chezdir\\n$notesdir\\n$csrcdir" | sed "/^[[:space:]]*$/d" | $fzfcmd --prompt "Sessionizer: ")
+	selected=$(printf "$mountdrive\\n$session\\n$configdir\\n$projectdir\\n$chezdir\\n$notesdir\\n$csrcdir" | sed "/^[[:space:]]*$/d" | $fzfcmd --prompt "Sessionizer: ")
 	[ -z "$selected" ] && exit 1
 
 	selected_name=$(basename "$selected" | tr . _)

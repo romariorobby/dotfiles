@@ -1,0 +1,53 @@
+#!/bin/sh
+
+. sb-config
+case "$BLOCK_BUTTON" in
+	3) notify-send -i xfce4-battery-plugin "Battery Module" "\- Scroll to adjust backlight" ;;
+	# intel only
+	4) xbacklight -inc 5 ;;
+	5) xbacklight -dec 5 ;;
+	6) "$TERMINAL" -e "$EDITOR" "$0" ;;
+esac
+
+# Loop through all attached batteries and format the info
+for battery in /sys/class/power_supply/BAT?*; do
+	# If non-first battery, print a space separator.
+	[ -n "${capacity+x}" ] && printf " "
+	# Sets up the status and capacity
+	capacity="$(cat "$battery/capacity" 2>&1)"
+	case "$(cat "$battery/status" 2>&1)" in
+		# "Full") status="⚡" ;;
+		"Full") status="${fg_green}${bat10}" ;;
+		"Discharging") 
+			if [ "$capacity" -ge 0 ] && [ "$capacity" -le 25 ]; then
+				status="${fg_red}${bat1}"
+			elif [ "$capacity" -ge 25 ]  && [ "$capacity" -le 35 ]; then
+				status="${bat2}"
+			elif [ "$capacity" -ge 35 ]  && [ "$capacity" -le 45 ]; then
+				status="${bat3}"
+			elif [ "$capacity" -ge 45 ]  && [ "$capacity" -le 55 ]; then
+				status="${bat4}"
+			elif [ "$capacity" -ge 55 ]  && [ "$capacity" -le 65 ]; then
+				status="${bat5}"
+			elif [ "$capacity" -ge 65 ]  && [ "$capacity" -le 75 ]; then
+				status="${bat6}"
+			elif [ "$capacity" -ge 75 ]  && [ "$capacity" -le 85 ]; then
+				status="${bat7}"
+			elif [ "$capacity" -ge 75 ]  && [ "$capacity" -le 85 ]; then
+				status="${bat8}"
+			elif [ "$capacity" -ge 85 ]  && [ "$capacity" -le 95 ]; then
+				status="${bat8}"
+			elif [ "$capacity" -ge 95 ]  && [ "$capacity" -le 100 ]; then
+				status="${bat9}"
+			fi
+			;;
+		"Charging") status="${fg_yellow}${batcharge}" ;;
+		"Not charging") status="${fg_red}${batcharge}!" ;;
+		"Unknown") status="${batalt}" ;;
+	esac
+	# Will make a warn variable if discharging and low
+	[ "$status" = "${fg_red}${bat1}" ] && [ "$capacity" -le 25 ] && warn="${fg_red}"
+	[ "$status" = "${fg_green}${bat10}" ] && [ "$capacity" -eq 100 ] && warn="${fg_green}"
+	# Prints the info
+	printf "%s%s%d%%" "$status${fg_norm}" "$warn" "$capacity"; unset warn
+done && printf "\\n"

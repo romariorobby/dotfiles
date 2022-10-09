@@ -1,36 +1,24 @@
 #!/bin/sh
 
-# Displays number of upgradeable packages.
-# For this to work, have a `pacman -Sy` command run in the background as a
-# cronjob every so often as root. This script will then read those packages.
-# When clicked, it will run an upgrade via pacman.
-#
-# Add the following text as a file in /usr/share/libalpm/hooks/statusbar.hook:
-#
-# [Trigger]
-# Operation = Upgrade
-# Type = Package
-# Target = *
-#
-# [Action]
-# Description = Updating statusbar[dwmblocks]...
-# When = PostTransaction
-# Exec = /usr/bin/pkill -RTMIN+${BLOCK_NUMBER} dwmblocks # or [yadav-dwmblocks] - /usr/local/bin/sigdwmblocks {int} 
 . sb-config
+
 case "$TERMINAL" in
 	"kitty") XFLAG="--name sb-popupg --class sb-popupg -e sb-popupg";;
 	"st") XFLAG="-n sb-popupg -c sb-popupg -e sb-popupg" ;;
 esac
 
 case $BLOCK_BUTTON in
-	1) setsid -f "$TERMINAL" $XFLAG ;;
-	2) notify-send "$(eval $pkgcmd_uplist)"; pkill -RTMIN+${BLOCK_PACKAGE} dwmblocks ;;
-	3) notify-send "🎁 Upgrade module" "📦: number of upgradable packages
+	1) notify-send -i software-store "$(eval "$pkgcmd_uplist")"; pkill -RTMIN+${BLOCKN_PACKAGE} dwmblocks ;;
+	2) setsid -f "$TERMINAL" $XFLAG ;;
+	3) notify-send -i software-store "Upgrade module" "number of upgradable packages
 - Left click to upgrade packages
-- $FLAG
-- Middle click to show upgradable packages"; pkill -RTMIN+${BLOCK_PACKAGE} dwmblocks ;;
+- Middle click to show upgradable packages"; pkill -RTMIN+${BLOCKN_PACKAGE} dwmblocks ;;
 	6) "$TERMINAL" -e "$EDITOR" "$0" ;;
 esac
 
-[ "$DISTRO" = "pop" ] && eval $pkgcmd_uplist | grep -Fcv "[ignored]" | sed "s/^/${ICON_DEBUNTU}/;s/^${ICON_DEBUNTU}${fg_norm}0$//g"\
-	|| $pkgcmd_uplist | grep -Fcv "[ignored]" | sed "s/^/${fg_blue}${ICON_ARCH}${fg_norm} /;s/^${ICON_ARCH} ${fg_norm}0$//g"
+case "$DISTRO" in
+	"pop") icon="${fg_blue}${ICON_DEBUNTU}" ;;
+	"arch") icon="${fg_blue}${ICON_ARCH}${fg_norm}" ;;
+esac
+
+$pkgcmd_uplist | grep -Fcv "[ignored]" | sed "s/^/${icon}/;s/^${icon}0$//g"

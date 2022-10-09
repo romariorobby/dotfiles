@@ -1,0 +1,17 @@
+#!/bin/sh
+. sb-config
+
+case "$BLOCK_BUTTON" in
+	1) setsid -f "$TERMINAL" -e pulsemixer ;;
+	2) pamixer -t ;;
+	3) notify-send -i kmix "Volume Module" "\- Middle click to mute\n- Scroll to change" ;;
+	4) pamixer --increase 1 ;;
+	5) pamixer --decrease 1 ;;
+esac
+
+vol="$(pamixer --get-volume)"
+
+[ "$(pamixer --get-mute)" = true ] || [ "$vol" -eq "0" ] && printf "%s" "${fg_red}0%${fg_norm}" && exit 
+[ "$vol" -eq "100" ] && printf "%s" "${fg_red}$vol%${fg_norm}" && exit
+
+printf "%s" "$vol%"

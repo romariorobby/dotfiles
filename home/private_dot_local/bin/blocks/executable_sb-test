@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case $BLOCK_BUTTON in
+	1) notify-send "$BLOCK_BUTTON" ;;
+	2) notify-send "$BLOCK_BUTTON" ;;
+	3) notify-send "$BLOCK_BUTTON" ;;
+	4) notify-send "$BLOCK_BUTTON" ;;
+	5) notify-send "$BLOCK_BUTTON" ;;
+	6) notify-send "$BLOCK_BUTTON" ;;
+	7) notify-send "$BLOCK_BUTTON" ;;
+	8) notify-send "$BLOCK_BUTTON" ;;
+	9) notify-send "$BLOCK_BUTTON" ;; 
+	10) notify-send "$BLOCK_BUTTON" ;;
+esac
+
+printf "CLICKME\n"

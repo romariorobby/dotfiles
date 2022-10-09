@@ -3,18 +3,8 @@
 
 printf "Beginning upgrade.\\n"
 
-[ "$DISTRO" = "pop" ] && eval $pkgcmd_up
-
-if [ -f "/usr/bin/yay" ]; then
-	yay -Syu
-elif [ -f "/usr/bin/paru" ]; then
-	paru -Syu
-# else
-# 	printf "%s\n" "No Package Manager Installed" >&2; exit 1
-fi
-
-([ -x "$(command -v "sigdwmblocks")" ] && sigdwmblocks ${BLOCKN_PACKAGE} >/dev/null) ||
-	pkill -RTMIN+${BLOCKN_PACKAGE} dwmblocks
+$pkgcmd_up
+pkill -RTMIN+${BLOCKN_PACKAGE} dwmblocks
 
 printf "\\nUpgrade complete.\\nPress <Enter> to exit window.\\n\\n"
 read -r

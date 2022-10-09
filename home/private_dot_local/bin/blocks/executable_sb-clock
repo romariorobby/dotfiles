@@ -2,13 +2,16 @@
 . sb-config
 
 case $BLOCK_BUTTON in
-	1) notify-send "This Month" "$(cal --color=always | sed "s/..7m/<b><span color=\"red\">/;s/..27m/<\/span><\/b>/")" && notify-send "Appointments" "$(calcurse -d3)" ;;
-	2) emacsclient -c --eval "(org-roam-dailies-find-today)";;
-	3) notify-send "📅 Time/date module" "\- Left click to show upcoming appointments for the next three days via \`calcurse -d3\` and show the month via \`cal\`
+	1) notify-send -i calendar "This Month" "$(cal --color=always | sed "s/..7m/<b><span color=\"red\">/;s|..27m|</span></b>|")" &&\
+		notify-send -i gnome-todo "Appointments" "$(calcurse -d3)"
+		notify-send -i gnome-todo "TODO" "$(calcurse -t)" ;;
+	2) setsid -f "$TERMINAL" -e calcurse ;;
+	# 2) emacsclient -c --eval "(org-roam-dailies-find-today)";;
+	3) notify-send -i calendar "Time/date module" "\- Left click to show upcoming appointments for the next three days via \`calcurse -d3\` and show the month via \`cal\`
 - Middle click opens calcurse if installed" ;;
-	7) setsid -f "$TERMINAL" -e calcurse ;;
 	6) "$TERMINAL" -e "$EDITOR" "$0" ;;
+	# 7) printf "%s%s" "${fg_blue}${ICON_CLOCK}${fg_norm}" "$(date "+%a %B %d")" && exit 1 ;;
 esac
 
-tme=$(date "+%a %B %d, %I:%M%P ")
-printf "%b%s" "${fg_blue}${ICON_CLOCK}${fg_norm}" "${tme}"
+tme=$(date "+%I:%M%P [%a %d/%m/%y]")
+printf "%s%s" "${fg_blue}${ICON_CLOCK}${fg_norm}" "${tme}"

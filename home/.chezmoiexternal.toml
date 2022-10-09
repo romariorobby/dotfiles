@@ -8,6 +8,10 @@
     type = "git-repo"
     url = "https://github.com/romariorobby/dwmf.git"
     refreshPeriod = "168h"
+[".local/src/dwmblocks-async"]
+    type = "git-repo"
+    url = "https://github.com/romariorobby/dwmblocks-async.git"
+    refreshPeriod = "168h"
 [".config/emacs-doom"]
 	args = "--depth 1"
 	type = "git-repo"

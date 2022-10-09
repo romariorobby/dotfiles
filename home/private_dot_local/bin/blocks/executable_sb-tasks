@@ -1,0 +1,15 @@
+#!/bin/sh
+
+. sb-config
+
+num=$(tsp -l | awk -v numr=0 -v numq=0 '{if (/running/)numr++; if (/queued/)numq++} END{print numr+numq"("numq")"}')
+
+case $BLOCK_BUTTON in
+	1) setsid -f "$TERMINAL" -e tsp -l ;; # FIX: Not worked
+	# TODO: add -i to notify-send
+	3) notify-send "Tasks module" " : number of running/queued background tasks R(B)
+- Left click opens tsp" ;; # Right click
+	2) $EDITOR "$0" ;; # Middle click
+esac
+
+[ "$num" != "0(0)" ] && printf "%s" "${fg_green}${fg_norm}$num"

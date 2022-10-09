@@ -22,6 +22,26 @@ This blocks made for dwmblocks. statusbar for dwm
 
 *** Requirement
 - pamixer
-
+- pulsemixer (for tui)
+   Use pulsemixer as cli its really slow, use pamixer instead!
 ** Packages
+Displays number of upgradeable packages.
+You need `pacman -Sy` command run in background (cronjobs)
+Add the following text as a file in /usr/share/libalpm/hooks/statusbar.hook:
+
+#+begin_src conf
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Updating statusbar[dwmblocks]...
+When = PostTransaction
+Exec = /usr/bin/pkill -RTMIN+${BLOCK_NUMBER} dwmblocks # or [yadav-dwmblocks] - /usr/local/bin/sigdwmblocks {int} 
+#+end_src
 *** Requirement
+** clock/date
+** mail
+** news
+** task

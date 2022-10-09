@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # siji or leave it empty
-BLOCK_FONT=""
-BLOCK_FONTSIZE="small"
+BLOCK_FONT="siji"
+BLOCK_FONTSIZE="big"
 
 # TODO:
 # STATUS2D="$(grep STATUS2D_PATCH ~/.local/src/dwm/patches.def.h | awk '{print $3}')"
@@ -27,13 +27,15 @@ case "$DISTRO" in
 		;;
 	"arch") pkgcmd_uplist="pacman -Qu"
 		if [ -f "/usr/bin/yay" ]; then
-			aurcmd_up="yay -Syu"
+			pkgcmd_up="yay -Syu"
 		elif [ -f "/usr/bin/paru" ]; then
-			aurcmd_up="paru -Syu"
+			pkgcmd_up="paru -Syu"
 		fi
 		;;
 esac
-
+# TODO: add icon
+# 		- volume
+# 		- tasks
 if [ "$BLOCK_FONT" = "siji" ]; then
 	ICON_NEWS=""
 	ICON_MAIL=""
@@ -58,8 +60,8 @@ else
 	ICON_CLOCK="C:"
 fi
 
-# refer this to dwmblocks-async/config.h
-# Block Number dwmblcoks
+# config Block Number for dwmblocks
+# 
 BLOCKN_CALENDAR=1
 BLOCKN_BATTERY=2
 BLOCKN_INTERNET=3
@@ -103,7 +105,7 @@ if [ "$BLOCK_FONT" = "siji" ]; then
 	bat7=""
 	bat8=""
 	bat9=""
-	bat10=""
+	bat10=""
 	batcharge=""
 	batalt=""
     else

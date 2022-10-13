@@ -83,8 +83,21 @@ super + a; e
 	$TERMINAL -e neomutt; pkill -RTMIN+5 dwmblocks
 
 # Launch Maim (screeshoot)
-super + Print
+Print
 	maimpick
+
+# Take screenshoot
+shift + Print
+	maim -q -d 0.2 full-$(date '+%d%m%y%H-%M').png && \
+	notify-send -i $HOME/full-$(date '+%d%m%y%H-%M').png "Screenshoot saved" "$HOME/full-$(date '+%d%m%y%H-%M').png"
+
+# Launch screen recording
+super + Print
+	menurecord
+
+# Forcefully kill menurecord
+super + shift + Print
+	menurecord kill
 
 super + p; {s,b,m}; {t,p,P,s,space}
 	playerctl -p '{spotify,chromium,mpc}' {play-pause,play,pause,stop,play-pause}

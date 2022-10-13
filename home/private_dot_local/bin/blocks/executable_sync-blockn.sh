@@ -16,6 +16,7 @@ blocks_changenum(){
 
 if [ -d "$dwmblocks_dir" ]; then
 	# Sync statubar.hook (archlinux)
+	blocks_changenum "BLOCKN_PACKAGE" "$BLOCKN_PACKAGE"
 	if [ -f "$dwmblocks_dir/statusbar.hook" ]; then 
 		(grep -q "\-RTMIN+$BLOCKN_PACKAGE" "$dwmblocks_dir/statusbar.hook" && printf "%s\n" "statusbar.hook[$BLOCKN_PACKAGE] up to date") \
 			|| { printf "%s\n" "Update statusbar.hook -> $BLOCKN_PACKAGE"; sed -i "s/\(-RTMIN+\)\([0-9]\+\)/\1$BLOCKN_PACKAGE/" "$dwmblocks_dir"/statusbar.hook; }
@@ -24,8 +25,14 @@ if [ -d "$dwmblocks_dir" ]; then
 
 	blocks_changenum "BLOCKN_BATTERY" "$BLOCKN_BATTERY"
 	blocks_changenum "BLOCKN_VOLUME" "$BLOCKN_VOLUME"
-	blocks_changenum "BLOCKN_PACKAGE" "$BLOCKN_PACKAGE"
 	blocks_changenum "BLOCKN_CLOCK" "$BLOCKN_CLOCK"
 	blocks_changenum "BLOCKN_NEWS" "$BLOCKN_NEWS"
+	
+	# menurecord
+	if [ -f "$HOME/.local/bin/menurecord" ]; then
+		blocks_changenum "BLOCKN_RECORD" "$BLOCKN_RECORD"
+		(grep -q "\-RTMIN+$BLOCKN_RECORD" "$HOME/.local/bin/menurecord" && echo "menurecord[$BLOCKN_RECORD] up to date") ||\
+			{ sed -i "s/\(-RTMIN+\)\([0-9]\+\)/\1$BLOCKN_RECORD/" "$HOME/.local/bin/menurecord" && echo "Update menurecord -> $BLOCKN_RECORD"; }
+	fi
 
 fi

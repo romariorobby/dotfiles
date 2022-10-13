@@ -1,4 +1,5 @@
 #!/bin/sh
+# Script for newsboat to add bookmark with buku
 
 url="$1"
 title="$2"

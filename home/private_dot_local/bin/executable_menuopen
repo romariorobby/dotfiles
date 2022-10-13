@@ -1,0 +1,29 @@
+#!/bin/sh
+
+case "$MENU" in
+	"dmenu") menucmd="dmenu -p" ;;
+	"rofi") menucmd="rofi -dmenu -p" ;;
+	"fzf") menucmd="fzf --prompt" ;;
+esac
+
+type="$(file --dereference --brief --mime-type -- "$1")"
+
+case "$type" in
+	image/*) sxiv -a "$1" ;;
+	inode/directory) 
+		case "$(printf "default\\npcmanfm\\nlf\\n" | $menucmd "Open $(basename "$1") [$type] with")" in
+			default) xdg-open "$1" ;;
+			pcmanfm) pcmanfm "$1" ;;
+			lf) $TERMINAL -e lfub "$1" ;;
+		esac
+		;;
+	text/*)
+		case "$(printf "default\\nnvim\\nvscode\\nemacs\\n" | $menucmd "Open $(basename "$1") [$type] with")" in
+			default) xdg-open "$1" ;;
+			nvim) $TERMINAL -e nvim "$1" ;;
+			vscode) code "$1" ;;
+			emacs) emacs "$1" ;;
+		esac
+		;;
+	*) notify-send "$type" "$1" ;;
+esac

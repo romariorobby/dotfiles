@@ -88,8 +88,8 @@ Print
 
 # Take screenshoot
 shift + Print
-	maim -q -d 0.2 full-$(date '+%d%m%y%H-%M').png && \
-	notify-send -i $HOME/full-$(date '+%d%m%y%H-%M').png "Screenshoot saved" "$HOME/full-$(date '+%d%m%y%H-%M').png"
+	maim -q -d 0.2 full-$(date '+%d%m%y-%H_%M').png && \
+	notify-send -i $HOME/full-$(date '+%d%m%y-%H_%M').png "Screenshoot saved" "$HOME/full-$(date '+%d%m%y-%H_%M').png"
 
 # Launch screen recording
 super + Print

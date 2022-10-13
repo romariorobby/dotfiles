@@ -9,8 +9,7 @@ dest="$HOME/Pictures/screenshoot"
 [ ! -d "$dest" ] && mkdir -p "$dest"
 
 [ -n "$1" ] && [ -d "$1" ] && dest="$1"
-
-out="$(date "+%d-%m-%y-%H_%M".png)"
+out="$(date "+%d%m%y-%H_%M".png)"
 picfull="$dest/full-$out"
 picselect="$dest/selected-$out"
 picwindow="$dest/window-$out"

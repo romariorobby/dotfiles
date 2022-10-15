@@ -1,8 +1,5 @@
 #!/bin/zsh
 
-export PATH="$PATH:$(find "$HOME/.local/bin" -type d | paste -sd ':')"
-# Add doom-emacs to $PATH
-[ -d "$HOME/.config/emacs-doom" ] && export PATH="$PATH:$HOME/.config/emacs-doom/bin"
 export EDITOR="nvim"
 {{- if (eq .osid "linux-pop") }}
 export WM="mutter"
@@ -11,8 +8,6 @@ export EBOOK="gnome-books"
 export READER="evince"
 export IMAGE="eog"
 
-# TODO: NPM: put this on ~/.local ?
-export PATH=$PATH:$HOME/node_modules/.bin # Npm
 {{- else if (eq .osid "linux-arch") }}
 export WM="dwm"
 export BROWSER="brave"
@@ -65,7 +60,8 @@ export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 export SUDO_ASKPASS="$HOME/.local/bin/menupass"
 {{- end }}
 
-# TODO: NPM
+export NPM_CONFIG_PREFIX="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
+export N_PREFIX="${XDG_DATA_HOME:-$HOME/.local/share}/n"
 export CARGO_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/cargo"
 export GOPATH="${XDG_DATA_HOME:-$HOME/.local/share}/go"
 export GRADLE_USER_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/gradle"
@@ -90,6 +86,12 @@ export LESS_TERMCAP_se="$(printf '%b' '[0m')"
 export LESS_TERMCAP_us="$(printf '%b' '[1;32m')"
 export LESS_TERMCAP_ue="$(printf '%b' '[0m')"
 export LESSOPEN="| /usr/bin/highlight -O ansi %s 2>/dev/null"
+
+export PATH="$PATH:$(find "$HOME/.local/bin" -type d | paste -sd ':')"
+# Add doom-emacs to $PATH
+[ -d "$HOME/.config/emacs-doom" ] && export PATH="$PATH:$HOME/.config/emacs-doom/bin"
+export PATH="$PATH:$HOME/.local/share/npm/bin" # Npm
+export PATH="$PATH:$GOPATH/bin"
 
 {{- if (eq .chezmoi.os "linux") }}
 [ ! -f ${XDG_CONFIG_HOME:-$HOME/.config}/shell/shortcutrc ] && setsid shortcuts >/dev/null 2>&1

@@ -1,0 +1,11 @@
+#+TITLE: Readme
+- [[https://github.com/streetturtle/awesome-wm-widgets][Awesome-widget]]
+
+* Widget
+** Battery
+   Required ~acpi~ installed
+
+** Brightness
+   Required ~xbackglight~ installed
+
+** Volume

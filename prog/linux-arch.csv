@@ -2,6 +2,8 @@
 XBMF,A,abook,"is addressbook usable by neomutt"
 BMF,A,gruvbox-material-gtk-theme-git,"Gruvbox gtk theme"
 BMF,A,gruvbox-material-icon-theme-git,"Gruvbox icon theme"
+XBMF,A,whitesur-gtk-theme,"WhiteSur gtk theme"
+XBMF,A,whitesur-icon-theme,"WhiteSur theme"
 BMF,A,lf-bin,"terminal file manager"
 XBMF,A,mutt-wizard-git,"tui email client"
 XMF,M,thunderbird,"GUI email client"

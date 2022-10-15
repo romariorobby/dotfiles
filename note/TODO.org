@@ -1,66 +1,171 @@
 #+TITLE: TODO
-
-
 * chezmoiscripts (run_)
-- [X] before_info
-  Printing current chezmoi information. profile, git name,username,etc..
+** DONE before_info
+Printing current chezmoi information. profile, git name,username,etc..
 
-- [X] before_decrypt
-  Decrypting script for gpg
+** DONE before_decrypt
+Decrypting script for gpg
 
-- [X] before_install
-  Installing programs
+** DONE before_install
+Installing programs
 
-- [-] before_setup
-  - [X] Setup passmgr
-  - [ ] 
+** DONE before_setup
+- [X] Setup passmgr
+- [ ]
 
-- [-] after_setup [2/3]
-  - [X] <all> add line to /etc/bash.bashrc to source ~/.config/bash/bashrc
-  - [X] <arch> customize pacman and makepkg
-  - [ ] <osx> customize default setting osx
+** DONE after_setup [2/3]
+- [X] <all> add line to /etc/bash.bashrc to source ~/.config/bash/bashrc
+- [X] <arch> customize pacman and makepkg
+- [ ] <osx> customize default setting osx
+
+
 
 * Programs configurations
-- [X] rofi
-- [X] x11
-- [X] zsh
-- [X] tmux
-- [X] git
-- [X] lf
-- [X] kitty
-- [ ] MPV
-  WIP
 
-- [-] gtk{1..4}
-  WIP
-  - [X] gtk3  (tested on arch)
+** DONE gtk{1..4}
 
-- [ ] alacritty
-- [ ] Fontconfig
-- [ ] neovim
-- [ ] Doom emacs
-- [ ] qutebrowser
-- [ ] Vieb
-- [ ] Spicetify
-- [ ] picom
-- [ ] Vscode
-- [ ] android studio
-- [ ] ideavim
+:PROPERTIES:
+:CATEGORY: config
+:END:
+WIP
+ - [X] gtk3  (tested on arch)
 
+*
+
+*
+
+*
+** DONE [#C] MPV
+
+** DONE [#C] newsboat
+- [X] Bukunb (intergration with buku)
+** DONE [#A] tmux
+- [ ] Tmate show ssh,web session
+- [ ] refactor tmx script
+** TODO autostart
+for DE (gnome-mutter,kde?)
+** TODO [#A] dunst
+** DONE Sxhkd
+*** DONE sxhkd-dwmf
+** DONE [#C] Zathura
+** TODO [#A] qutebrowser
+** TODO alacritty
+** TODO Fontconfig
+** TODO [#A] neovim
+** NEXT [#A] Doom emacs
+- [ ] Org roam capture
+- [ ] md-roam aliases fix
+** TODO Vieb
+** TODO Spicetify
+** DONE picom
+** TODO [#C] Vscode
+** TODO android studio
+** TODO ncmpcpp
+*** TODO mpd 	
+** TODO ideavim
+** DONE buku
+** DONE rofi
+** DONE x11
+** DONE zsh
+** DONE git
+** DONE lf
+** DONE kitty
+** TODO mimeapps.list
+** Suckless
+:PROPERTIES:
+:CATEGORY: suckless
+:END:
+*** DONE [#A] dwm
+:PROPERTIES:
+:CATEGORY: dwm
+:END:
+**** DONE [#A] Window Rule
+*** NEXT [#A] dwmblocks
+dmwblocks-async
+- [X] Add to .chezmoiexternal
+**** NEXT Blocks [7/8]
+Depends on [[dwmblocks]]
+- [X] task
+- [X] config
+- [X] volume
+- [X] news (rss feed)
+- [X] packages
+- [X] clock/date
+- [X] battery
+- [ ] mail
+- [ ] internet
+** TODO KDE
+- [ ]
 * Script
-- [X] bukumenu
-- [X] bukunb
-- [X] changer
-- [X] lfub
-- [X] menuhandler
-- [X] menupass
-- [X] setbg
-- [X] shortcuts
-- [X] tmx
-- [X] sysact
+:PROPERTIES:
+:CATEGORY: script
+:END:
 
+** DONE Linkhandler
+- [ ] osx support?
+req: (newsboat,menuhandler)
+** DONE [#A] tmx (parent: tmux)
+** DONE Bukumenu
+** DONE bukunb
+** DONE changer
+** DONE [#A] setbg
+** DONE ifinstalled
+** DONE [#A] menu{mount,unmount} :linux:
+** DONE lfub
+simple wrapper lf to support images
+** DONE menuhandler
+** DONE menupass
+req: SUDO_ASKPASS
+** DONE setbg
+used by: lf,xinitrc,
+** DONE shortcuts
+** DONE tmx
+** DONE sysact
+** DONE remaps
+- Linux only
+** DONE rotdir
+req: sxiv
+** DONE mpvhist
+** TODO [#A] Devour (swallowing)
+** DONE maimpick
+maim screenshoot
+** DONE compiler
+** DONE xep
+Xephy wrapper
+** DONE [#A] menurecord
+- [ ] Record Internal Audio
+** TODO [#B] subdl
+download subittiles through subscene
+** TODO [#B] flix
+script to watch torrent movies on mpv
+** TODO Displayselect
+** DONE camtog
+** TODO otp
+pass-otp
+** DONE Texclear
+** DONE bake
+backup gpg
+** TODO menuopen
+** TODO Lit
+Traverse to my book directory
+
+** TODO qsetup
+setup various programs:
+- [ ] virtualbox
+- [ ] anbox
+- [ ] qemu
+- [ ] doom emacs
+- [ ] spicetify
+* local/share
+** applications
+- [ ] default apps
+** TODO Text.desktop
 * IMP
-- [ ] git need to be installed before run chezmoi otherwise you have to rerun
+- [ ] Wayland setup?
+- [ ] git need to be installed before run chezmoi otherwise you have to rerun scripts
   sol1: create preinstall script ?
 - [ ] Xorg?
 - [ ] fix xbacklight popOS
+- [ ] chezmoidata
+  - [ ] add font size depends on screen resolutions?
+- [ ] Testing on macOS

@@ -1,0 +1,14 @@
+#+TITLE: npm
+
+* Fix NPM permission
+#+begin_src shell
+mkdir -p $HOME/.local/share/npm
+npm config set prefix "$HOME/.local/share/npm"
+# or
+NPM_CONFIG_PREFIX="$HOME/.local/share/npm"
+#+end_src
+* N (nodejs manager)
+#+begin_src shell
+npm install -g n
+#+end_src
+- Set ~N_PREFIX~ env to ~$HOME/.local/share~
